@@ -1,0 +1,16 @@
+# Cloudflare Workers 설정
+# name: 프로젝트명으로 변경 필요
+name = "boilerplate-ssr"
+main = "workers/app.ts"
+compatibility_date = "2024-11-18"
+compatibility_flags = ["nodejs_compat"]
+preview_urls = true
+
+# 커스텀 도메인 설정
+routes = [
+  { pattern = "ssr.boilerplate.tinysolver.me", custom_domain = true }
+]
+
+[assets]
+directory = "./build/client"
+binding = "ASSETS"
