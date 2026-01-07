@@ -6,8 +6,10 @@ Craftify에서 사용하는 프로덕션 레디 프로젝트 템플릿 모음입
 
 ```bash
 # degit으로 boilerplate 가져오기
-npx degit k-codepoet/craftify-boilerplates/web/react-router-ssr my-app
-npx degit k-codepoet/craftify-boilerplates/web/react-router-spa my-app
+npx degit k-codepoet/craftify-boilerplates/web/react-router-ssr my-app       # Node.js SSR
+npx degit k-codepoet/craftify-boilerplates/web/react-router-spa my-app       # Node.js SPA
+npx degit k-codepoet/craftify-boilerplates/web/react-router-ssr-cloudflare my-app  # Cloudflare SSR
+npx degit k-codepoet/craftify-boilerplates/web/react-router-spa-cloudflare my-app  # Cloudflare SPA
 
 cd my-app
 pnpm install
@@ -35,58 +37,58 @@ pnpm typecheck  # TypeScript 타입 체크
 ## 구조
 
 ```
-web/                    # 웹 프론트엔드/풀스택
-├── react-router-ssr/          # React Router v7 + SSR
-├── react-router-spa/          # React Router v7 + SPA (Static)
-├── tanstack-start-ssr/        # (예정) TanStack Start + SSR
-└── nextjs-ssr/                # (예정) Next.js + SSR
-
-api/                    # 백엔드 API
-├── hono/                      # (예정) Hono API
+web/                              # 웹 프론트엔드/풀스택
+├── react-router-ssr/             # SSR (Node.js, Docker)
+├── react-router-spa/             # SPA (Node.js/nginx, Docker)
+├── react-router-ssr-cloudflare/  # SSR (Cloudflare Workers)
+├── react-router-spa-cloudflare/  # SPA (Cloudflare Pages)
 └── ...
 
-lib/                    # 라이브러리/패키지
-└── typescript-package/        # (예정) TypeScript 패키지 템플릿
+api/                              # 백엔드 API (예정)
+lib/                              # 라이브러리/패키지 (예정)
 ```
 
 ## Boilerplate 목록
 
-### Web
+### Web - 범용 (Docker/Self-hosted)
 
-| 이름 | 프레임워크 | 렌더링 | 상태 |
-|------|-----------|--------|------|
-| `react-router-ssr` | React Router v7 | SSR | ✅ |
-| `react-router-spa` | React Router v7 | SPA | ✅ |
-| `tanstack-start-ssr` | TanStack Start | SSR | 📋 예정 |
-| `tanstack-router-spa` | TanStack Router | SPA | 📋 예정 |
-| `nextjs-ssr` | Next.js | SSR/SSG | 📋 예정 |
+| 이름 | 렌더링 | 배포 | 상태 |
+|------|--------|------|------|
+| `react-router-ssr` | SSR | Docker, k8s, 클라우드 | ✅ |
+| `react-router-spa` | SPA | Docker (nginx), 정적 호스팅 | ✅ |
 
-#### react-router-ssr
-프로덕션 애플리케이션을 위한 풀스택 SSR 템플릿.
-- Server-side rendering with `renderToReadableStream`
-- isbot 검출로 검색엔진 크롤러 최적화
+- **Dockerfile, docker-compose.yml 포함**
+- 셀프호스팅, Docker, k8s, 클라우드 등 자유롭게 배포
 
-#### react-router-spa
-빠른 프로토타이핑을 위한 정적 SPA 템플릿.
-- 클라이언트 사이드 렌더링만 사용
-- 어떤 정적 호스팅에도 배포 가능 (Pages, Vercel, Netlify)
-- 빌드 결과물: `build/client/` 디렉토리
+### Web - Cloudflare
 
-### API
+| 이름 | 렌더링 | 배포 | 상태 |
+|------|--------|------|------|
+| `react-router-ssr-cloudflare` | SSR | Cloudflare Workers | ✅ |
+| `react-router-spa-cloudflare` | SPA | Cloudflare Pages | ✅ |
+
+- **wrangler 설정 포함**
+- `pnpm deploy`로 바로 배포
+
+### 예정
 
 | 이름 | 프레임워크 | 상태 |
 |------|-----------|------|
-| `hono` | Hono | 📋 예정 |
+| `tanstack-start-ssr` | TanStack Start | 📋 예정 |
+| `tanstack-router-spa` | TanStack Router | 📋 예정 |
+| `nextjs-ssr` | Next.js | 📋 예정 |
+| `hono` | Hono API | 📋 예정 |
 
 ## 네이밍 규칙
 
 ```
-{framework}-ssr   # SSR 렌더링
-{framework}-spa   # SPA (Static) 렌더링
+{framework}-{rendering}              # 범용 (Node.js)
+{framework}-{rendering}-{platform}   # 플랫폼 특화
 ```
 
-배포 플랫폼(Cloudflare, Vercel 등)은 템플릿 이름에 포함하지 않습니다.
-프로젝트 생성 후 필요에 따라 배포 설정을 추가합니다.
+예시:
+- `react-router-ssr` - React Router SSR, 범용
+- `react-router-spa-cloudflare` - React Router SPA, Cloudflare Pages
 
 ## 공통 기술 스택
 

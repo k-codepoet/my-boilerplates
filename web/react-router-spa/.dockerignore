@@ -1,0 +1,11 @@
+node_modules
+build
+.react-router
+*.log
+.git
+.gitignore
+README.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+nginx.conf
