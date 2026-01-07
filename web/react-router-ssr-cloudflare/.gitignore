@@ -10,3 +10,6 @@
 # Wrangler
 .wrangler/
 .dev.vars
+
+# Turbo
+.turbo/

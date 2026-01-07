@@ -1,0 +1,87 @@
+name: Test Boilerplates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-degit:
+    name: Test degit copy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        boilerplate:
+          - react-router-ssr
+          - react-router-spa
+          - react-router-ssr-cloudflare
+          - react-router-spa-cloudflare
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install degit
+        run: npm install -g degit
+
+      - name: Simulate degit copy
+        run: |
+          # degit은 git repo에서 복사하므로, 로컬에서는 cp로 시뮬레이션
+          mkdir -p /tmp/test-app
+          cp -r web/${{ matrix.boilerplate }}/. /tmp/test-app/
+          ls -la /tmp/test-app/
+
+      - name: Verify .github workflows copied
+        run: |
+          if [ -d "web/${{ matrix.boilerplate }}/.github" ]; then
+            echo "✅ .github directory exists in source"
+            ls -la /tmp/test-app/.github/workflows/ || echo "⚠️ No workflows found"
+          else
+            echo "ℹ️ No .github directory in this boilerplate"
+          fi
+
+      - name: Install dependencies
+        working-directory: /tmp/test-app
+        run: pnpm install
+
+      - name: Build
+        working-directory: /tmp/test-app
+        run: pnpm build
+
+      - name: Typecheck
+        working-directory: /tmp/test-app
+        run: pnpm typecheck
+
+  test-docker:
+    name: Test Docker build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        boilerplate:
+          - react-router-ssr
+          - react-router-spa
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: web/${{ matrix.boilerplate }}
+          push: false
+          tags: test-${{ matrix.boilerplate }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
