@@ -1,13 +1,39 @@
 # Craftify Boilerplates
 
-Craftify에서 사용하는 프로젝트 템플릿 모음입니다.
+Craftify에서 사용하는 프로덕션 레디 프로젝트 템플릿 모음입니다.
 
-## 사용법
+## 빠른 시작
 
 ```bash
-# degit으로 특정 boilerplate 가져오기
+# degit으로 boilerplate 가져오기
 npx degit k-codepoet/craftify-boilerplates/web/react-router-cloudflare my-app
-npx degit k-codepoet/craftify-boilerplates/web/react-router-spa my-app
+cd my-app
+pnpm install
+pnpm dev
+```
+
+## 개발 명령어
+
+### 루트 레벨 (Turbo)
+```bash
+pnpm install    # 의존성 설치
+pnpm dev        # 모든 패키지 개발 서버 시작
+pnpm build      # 모든 패키지 빌드
+pnpm lint       # 모든 패키지 린트
+pnpm clean      # 빌드 결과물 정리
+```
+
+### 개별 Boilerplate
+```bash
+pnpm dev        # 개발 서버 (HMR)
+pnpm build      # 프로덕션 빌드
+pnpm typecheck  # TypeScript 타입 체크
+```
+
+**SSR 전용 (react-router-cloudflare):**
+```bash
+pnpm start      # Wrangler 로컬 서버
+pnpm deploy     # Cloudflare Workers 배포
 ```
 
 ## 구조
@@ -42,6 +68,19 @@ lib/                    # 라이브러리/패키지
 | `nextjs-vercel` | Next.js | SSR/SSG | Vercel | 📋 예정 |
 | `nextjs-cloudflare` | Next.js | SSR | Cloudflare | 📋 예정 |
 
+#### react-router-cloudflare
+프로덕션 애플리케이션을 위한 풀스택 SSR 템플릿.
+- Server-side rendering with `renderToReadableStream`
+- isbot 검출로 검색엔진 크롤러 최적화
+- Cloudflare Workers 환경 통합 (KV, D1, R2 등 사용 가능)
+- `wrangler.toml` 설정 포함
+
+#### react-router-spa
+빠른 프로토타이핑을 위한 정적 SPA 템플릿.
+- 클라이언트 사이드 렌더링만 사용
+- 어떤 정적 호스팅에도 배포 가능 (Pages, Vercel, Netlify)
+- 빌드 결과물: `build/client/` 디렉토리
+
 ### API
 
 | 이름 | 프레임워크 | 배포 대상 | 상태 |
@@ -58,11 +97,30 @@ lib/                    # 라이브러리/패키지
 
 ## 공통 기술 스택
 
-- **패키지 매니저**: pnpm
-- **빌드 도구**: Vite / Turbopack
-- **스타일링**: Tailwind CSS v4
-- **타입**: TypeScript 5
-- **UI 컴포넌트**: shadcn/ui 호환
+- **패키지 매니저**: pnpm v10.12+
+- **모노레포**: Turbo v2.5+
+- **빌드 도구**: Vite 7
+- **프레임워크**: React Router v7
+- **스타일링**: Tailwind CSS v4 (OKLch 컬러 시스템)
+- **타입**: TypeScript 5 (strict mode)
+- **UI 컴포넌트**: shadcn/ui 호환 (new-york 스타일)
+- **아이콘**: lucide-react
+- **폰트**: Inter (Google Fonts)
+
+### 프로젝트 내부 구조
+```
+app/
+├── app.css           # 글로벌 스타일 + Tailwind + 테마 변수
+├── root.tsx          # 루트 레이아웃 (에러 바운더리 포함)
+├── routes.ts         # React Router v7 라우트 설정
+├── routes/           # 페이지 컴포넌트
+├── components/       # UI 컴포넌트 (shadcn/ui)
+├── lib/utils.ts      # 유틸리티 (cn 함수)
+└── hooks/            # 커스텀 훅
+```
+
+### Path Alias
+모든 boilerplate는 `~/*` → `./app/*` 경로 별칭 사용.
 
 ## Craftify 연동
 
