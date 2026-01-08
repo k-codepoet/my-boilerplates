@@ -1,5 +1,18 @@
 # Slack Bot Setup Guide
 
+## Prerequisites
+
+- **Node.js 22+** (`.nvmrc` 파일 참조)
+- **pnpm** 패키지 매니저
+
+```bash
+# nvm으로 Node.js 버전 설정
+nvm install && nvm use
+
+# pnpm 설치 (없을 경우)
+corepack enable && corepack prepare pnpm@latest --activate
+```
+
 ## Quick Start
 
 ```bash

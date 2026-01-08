@@ -2,16 +2,26 @@
 
 Self-hosted Slack bot for file processing. Uses **Socket Mode** - no public URL required!
 
+## Prerequisites
+
+- **Python 3.12+** (`.python-version` 파일 참조)
+- **uv** (권장) 또는 pip
+
+```bash
+# uv 설치 (macOS/Linux)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ## Quick Start
 
 ```bash
-# 1. Create virtual environment
-python -m venv .venv
+# 1. Create virtual environment (uv 사용)
+uv venv
 source .venv/bin/activate  # Linux/Mac
 # .venv\Scripts\activate   # Windows
 
 # 2. Install dependencies
-pip install -e .
+uv pip install -e .
 
 # 3. Copy env file and fill in credentials
 cp .env.example .env
@@ -19,6 +29,8 @@ cp .env.example .env
 # 4. Run
 python -m src.main
 ```
+
+> **Note**: pip도 사용 가능하지만 uv가 10~100배 빠릅니다.
 
 ---
 

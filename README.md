@@ -90,6 +90,15 @@ lib/                              # 라이브러리/패키지 (예정)
 - `react-router-ssr` - React Router SSR, 범용
 - `react-router-spa-cloudflare` - React Router SPA, Cloudflare Pages
 
+## 로컬 개발 환경
+
+로컬 개발 시 런타임 버전 관리에 대한 자세한 내용은 [docs/LOCAL_DEV_SETUP.md](./docs/LOCAL_DEV_SETUP.md)를 참조하세요.
+
+| 런타임 | 버전 관리 | 버전 파일 |
+|--------|----------|----------|
+| Node.js | nvm | `.nvmrc` |
+| Python | uv | `.python-version` |
+
 ## 공통 기술 스택
 
 - **패키지 매니저**: pnpm v10.12+
