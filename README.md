@@ -6,13 +6,20 @@ Craftify에서 사용하는 프로덕션 레디 프로젝트 템플릿 모음입
 
 ```bash
 # degit으로 boilerplate 가져오기
+
+# Web
 npx degit k-codepoet/craftify-boilerplates/web/react-router-ssr my-app       # Node.js SSR
 npx degit k-codepoet/craftify-boilerplates/web/react-router-spa my-app       # Node.js SPA
 npx degit k-codepoet/craftify-boilerplates/web/react-router-ssr-cloudflare my-app  # Cloudflare SSR
 npx degit k-codepoet/craftify-boilerplates/web/react-router-spa-cloudflare my-app  # Cloudflare SPA
 
-cd my-app
-pnpm install
+# CLI/TUI
+npx degit k-codepoet/craftify-boilerplates/cli/ratatui-rs my-cli      # Rust (최소 용량)
+npx degit k-codepoet/craftify-boilerplates/cli/bubbletea-go my-cli    # Go (균형)
+npx degit k-codepoet/craftify-boilerplates/cli/ink-ts my-cli          # TypeScript (React 스타일)
+
+cd my-app  # 또는 my-cli
+pnpm install  # 또는 cargo build / go mod tidy
 pnpm dev
 ```
 
@@ -44,6 +51,11 @@ web/                              # 웹 프론트엔드/풀스택
 ├── react-router-spa-cloudflare/  # SPA (Cloudflare Pages)
 └── ...
 
+cli/                              # CLI/TUI 애플리케이션
+├── ratatui-rs/                   # Rust + Ratatui
+├── bubbletea-go/                 # Go + Bubbletea
+└── ink-ts/                       # TypeScript + Ink
+
 api/                              # 백엔드 API (예정)
 lib/                              # 라이브러리/패키지 (예정)
 ```
@@ -69,6 +81,33 @@ lib/                              # 라이브러리/패키지 (예정)
 
 - **wrangler 설정 포함**
 - `pnpm deploy`로 바로 배포
+
+### CLI - TUI 애플리케이션
+
+| 이름 | 언어 | 바이너리 크기 | 배포 | 상태 |
+|------|------|-------------|------|------|
+| `ratatui-rs` | Rust | ~2MB | npm (네이티브) | ✅ |
+| `bubbletea-go` | Go | ~2.5MB | npm (네이티브) | ✅ |
+| `ink-ts` | TypeScript | - | npm (JS) | ✅ |
+
+#### CLI Boilerplate 선택 가이드
+
+| 기준 | ratatui-rs | bubbletea-go | ink-ts |
+|------|-----------|--------------|--------|
+| **바이너리 크기** | 가장 작음 (~2MB) | 작음 (~2.5MB) | N/A (Node.js 필요) |
+| **메모리 사용량** | 가장 적음 | 적음 | 보통 |
+| **런타임 성능** | 가장 빠름 | 빠름 | 보통 |
+| **개발 속도** | 느림 | 보통 | 빠름 |
+| **학습 곡선** | 높음 (Rust) | 보통 (Go) | 낮음 (React) |
+| **생태계** | Ratatui | Charm (Bubbletea, Lipgloss, Bubbles) | Ink, @inkjs/ui |
+| **사용자 환경** | 바로 실행 | 바로 실행 | Node.js 설치 필요 |
+
+**선택 기준:**
+- **배포 용량/성능 최우선** → `ratatui-rs`
+- **개발 속도와 성능 균형** → `bubbletea-go`
+- **React 익숙 + 빠른 프로토타입** → `ink-ts`
+- **사용자에게 Node.js 설치 요구 가능** → `ink-ts`
+- **단일 바이너리 배포 필수** → `ratatui-rs` 또는 `bubbletea-go`
 
 ### 예정
 

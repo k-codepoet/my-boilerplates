@@ -1,0 +1,23 @@
+[package]
+name = "mycli"
+version = "0.1.0"
+edition = "2021"
+description = "TUI CLI application built with Ratatui"
+license = "MIT"
+repository = "https://github.com/user/mycli"
+
+[[bin]]
+name = "mycli"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+color-eyre = "0.6"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

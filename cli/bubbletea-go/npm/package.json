@@ -1,0 +1,27 @@
+{
+  "name": "@mycli/cli",
+  "version": "0.1.0",
+  "description": "TUI CLI application built with Bubbletea",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/mycli"
+  },
+  "bin": {
+    "mycli": "bin/cli.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "postinstall": "node bin/install.js"
+  },
+  "optionalDependencies": {
+    "@mycli/cli-darwin-arm64": "0.1.0",
+    "@mycli/cli-darwin-x64": "0.1.0",
+    "@mycli/cli-linux-arm64": "0.1.0",
+    "@mycli/cli-linux-x64": "0.1.0",
+    "@mycli/cli-win32-arm64": "0.1.0",
+    "@mycli/cli-win32-x64": "0.1.0"
+  }
+}
