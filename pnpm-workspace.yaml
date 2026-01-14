@@ -3,3 +3,4 @@ packages:
   - "bot/*"
   - "cli/*"
   - "lib/*"
+  - "native-app/*"
