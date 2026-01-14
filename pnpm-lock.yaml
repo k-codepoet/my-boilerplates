@@ -160,6 +160,88 @@ importers:
         specifier: ^7.1.7
         version: 7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)
 
+  native-app/tauri-react-router:
+    dependencies:
+      '@react-router/node':
+        specifier: ^7.10.1
+        version: 7.11.0(react-router@7.11.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
+      '@tauri-apps/api':
+        specifier: ^2
+        version: 2.9.1
+      '@tauri-apps/plugin-dialog':
+        specifier: ^2
+        version: 2.5.0
+      '@tauri-apps/plugin-fs':
+        specifier: ^2
+        version: 2.4.5
+      '@tauri-apps/plugin-process':
+        specifier: ^2
+        version: 2.3.1
+      '@tauri-apps/plugin-shell':
+        specifier: ^2
+        version: 2.3.4
+      '@tauri-apps/plugin-updater':
+        specifier: ^2
+        version: 2.9.0
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      isbot:
+        specifier: ^5
+        version: 5.1.32
+      lucide-react:
+        specifier: ^0.560.0
+        version: 0.560.0(react@19.2.3)
+      react:
+        specifier: ^19.2.1
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.2.1
+        version: 19.2.3(react@19.2.3)
+      react-router:
+        specifier: ^7.10.1
+        version: 7.11.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.0
+    devDependencies:
+      '@react-router/dev':
+        specifier: ^7.10.1
+        version: 7.11.0(@react-router/serve@7.11.0(react-router@7.11.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3))(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(react-router@7.11.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))(wrangler@4.57.0(@cloudflare/workers-types@4.20260107.1))
+      '@tailwindcss/vite':
+        specifier: ^4.1.13
+        version: 4.1.18(vite@7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+      '@tauri-apps/cli':
+        specifier: ^2
+        version: 2.9.6
+      '@types/node':
+        specifier: ^22
+        version: 22.19.3
+      '@types/react':
+        specifier: ^19.2.7
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.7)
+      tailwindcss:
+        specifier: ^4.1.13
+        version: 4.1.18
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.7
+        version: 7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+
   web/react-router-spa:
     dependencies:
       '@react-router/node':
