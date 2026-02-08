@@ -8,9 +8,8 @@
 #
 # DinD 환경 참고:
 #   - Runner는 DinD(Docker-in-Docker)로 빌드
-#   - clone_url은 HTTP (DinD에서 TLS 인증서 없음)
-#   - Registry도 HTTP로 접근 (insecure-registries)
-#   - extra_hosts로 NAS IP 직접 지정
+#   - clone_url은 HTTP (DinD → NAS 직접, TLS 없음)
+#   - Registry는 HTTPS (DinD → Mac Mini Traefik 경유, extra_hosts로 설정)
 
 stages:
   - build
@@ -21,7 +20,6 @@ stages:
   services:
     - name: docker:dind
       alias: docker
-      command: ["--insecure-registry=gitlab-registry.home.codepoet.site"]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
     REGISTRY_URL: gitlab-registry.home.codepoet.site
