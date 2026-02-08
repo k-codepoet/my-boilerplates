@@ -34,6 +34,12 @@ stages:
     - "docker run --rm alpine cat /etc/resolv.conf || true"
     - "docker run --rm alpine nslookup gitlab.home.codepoet.site || true"
     - "docker run --rm alpine nslookup gitlab-registry.home.codepoet.site || true"
+    - echo "=== DinD service container resolv.conf ==="
+    - "docker run --rm --pid=host --privileged alpine nsenter -t 1 -m cat /etc/resolv.conf || true"
+    - echo "=== DinD service container hosts ==="
+    - "docker run --rm --pid=host --privileged alpine nsenter -t 1 -m cat /etc/hosts || true"
+    - echo "=== Direct curl from DinD to JWT ==="
+    - "docker run --rm alpine wget -q -O- --no-check-certificate https://gitlab.home.codepoet.site/jwt/auth 2>&1 | head -5 || true"
     - echo "=== Attempt login ==="
     - echo "$CI_REGISTRY_PASSWORD" | docker login $REGISTRY_URL -u $CI_REGISTRY_USER --password-stdin
 
