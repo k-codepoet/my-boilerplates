@@ -24,15 +24,15 @@ stages:
     DOCKER_TLS_CERTDIR: "/certs"
     REGISTRY_URL: gitlab-registry.home.codepoet.site
   before_script:
-    - echo "=== DEBUG: DNS & Network ==="
+    - echo "=== DEBUG DNS & Network ==="
     - cat /etc/hosts
-    - nslookup gitlab-registry.home.codepoet.site || true
-    - nslookup gitlab.home.codepoet.site || true
-    - echo "=== DEBUG: Docker info ==="
-    - docker info 2>&1 | head -20 || true
-    - echo "=== DEBUG: Try registry v2 ==="
-    - wget -q -O- --no-check-certificate https://gitlab-registry.home.codepoet.site/v2/ 2>&1 || true
-    - echo "=== DEBUG: Try login ==="
+    - "nslookup gitlab-registry.home.codepoet.site || true"
+    - "nslookup gitlab.home.codepoet.site || true"
+    - echo "=== DEBUG Docker info ==="
+    - "docker info 2>&1 | head -20 || true"
+    - echo "=== DEBUG Try registry v2 ==="
+    - "wget -q -O- --no-check-certificate https://gitlab-registry.home.codepoet.site/v2/ 2>&1 || true"
+    - echo "=== DEBUG Try login ==="
     - echo "$CI_REGISTRY_PASSWORD" | docker login $REGISTRY_URL -u $CI_REGISTRY_USER --password-stdin
 
 # ─────────────────────────────────────────────
