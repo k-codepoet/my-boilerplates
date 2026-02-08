@@ -5,6 +5,12 @@
 #
 # 태그를 push하면 해당 패키지의 Dockerfile로 빌드 후
 # gitlab-registry.home.codepoet.site로 push
+#
+# DinD 환경 참고:
+#   - Runner는 DinD(Docker-in-Docker)로 빌드
+#   - clone_url은 HTTP (DinD에서 TLS 인증서 없음)
+#   - Registry도 HTTP로 접근 (insecure-registries)
+#   - extra_hosts로 NAS IP 직접 지정
 
 stages:
   - build
@@ -15,10 +21,12 @@ stages:
   services:
     - name: docker:dind
       alias: docker
+      command: ["--insecure-registry=gitlab-registry.home.codepoet.site"]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
+    REGISTRY_URL: gitlab-registry.home.codepoet.site
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $REGISTRY_URL -u $CI_REGISTRY_USER --password-stdin
 
 # ─────────────────────────────────────────────
 # web/react-router-spa
@@ -29,7 +37,7 @@ build-react-router-spa:
     - if: '$CI_COMMIT_TAG =~ /^web\/react-router-spa\/v.+/'
   variables:
     PKG_DIR: web/react-router-spa
-    IMAGE_NAME: $CI_REGISTRY_IMAGE/web/react-router-spa
+    IMAGE_NAME: ${REGISTRY_URL}/k-codepoet/my-boilerplates/web/react-router-spa
   script:
     - VERSION=${CI_COMMIT_TAG##*/}
     - echo "Building ${IMAGE_NAME}:${VERSION}"
