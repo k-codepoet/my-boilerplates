@@ -1,0 +1,38 @@
+# GitLab CI/CD - Monorepo Tag-based Docker Build & Push
+#
+# 태그 규칙: {package-path}/{version}
+#   예: web/react-router-spa/v2026.02.08
+#
+# 태그를 push하면 해당 패키지의 Dockerfile로 빌드 후
+# gitlab-registry.home.codepoet.site로 push
+
+stages:
+  - build
+
+.docker-build:
+  stage: build
+  image: docker:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+
+# ─────────────────────────────────────────────
+# web/react-router-spa
+# ─────────────────────────────────────────────
+build-react-router-spa:
+  extends: .docker-build
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^web\/react-router-spa\/v.+/'
+  variables:
+    PKG_DIR: web/react-router-spa
+    IMAGE_NAME: $CI_REGISTRY_IMAGE/web/react-router-spa
+  script:
+    - VERSION=${CI_COMMIT_TAG##*/}
+    - echo "Building ${IMAGE_NAME}:${VERSION}"
+    - docker build -t ${IMAGE_NAME}:${VERSION} -t ${IMAGE_NAME}:latest ${PKG_DIR}
+    - docker push ${IMAGE_NAME}:${VERSION}
+    - docker push ${IMAGE_NAME}:latest
