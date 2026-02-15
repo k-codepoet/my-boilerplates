@@ -1,44 +1,228 @@
-# GitLab CI/CD - Monorepo Tag-based Docker Build & Push
+# GitLab CI/CD - my-boilerplates
 #
-# 태그 규칙: {package-path}/{version}
-#   예: web/react-router-spa/v2026.02.08
+# Boilerplate Validation Pipeline
+# 각 boilerplate를 degit 시뮬레이션으로 검증:
+#   copy → install → build → typecheck
 #
-# 태그를 push하면 해당 패키지의 Dockerfile로 빌드 후
-# gitlab-registry.home.codepoet.site로 push
+# Pipeline 구조:
+#   validate:
+#     ├─ validate:web          (matrix: 6 web boilerplates)
+#     ├─ validate:bot-ts       (matrix: 2 TS bot boilerplates)
+#     ├─ validate:bot-python   (Python bot)
+#     ├─ validate:cli-ts       (ink-ts)
+#     ├─ validate:cli-rust     (ratatui-rs)
+#     ├─ validate:cli-go       (bubbletea-go)
+#     └─ validate:native-app   (matrix: 2 Tauri, frontend only)
+#   docker:
+#     └─ docker:build          (matrix: Dockerfile 있는 4개)
 #
-# DinD 환경 참고:
-#   - Runner는 DinD(Docker-in-Docker)로 빌드
-#   - clone_url은 HTTP (DinD → NAS 직접, TLS 없음)
-#   - Registry는 HTTPS (DinD → Mac Mini Traefik 경유, extra_hosts로 설정)
+# Runners:
+#   - gitlab-runner-linux (amd64, docker/dind) : tags [docker, linux, amd64]
+#
+# 트리거: main push, MR
 
 stages:
-  - build
+  - validate
+  - docker
 
-.docker-build:
-  stage: build
-  image: docker:latest
+# ============================================================
+#  Rules & Templates
+# ============================================================
+
+.rules:main:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# Node.js boilerplate degit 시뮬레이션 템플릿
+# 독립 디렉토리에 복사 → pnpm install → build → typecheck
+.degit-node:
+  stage: validate
+  image: node:22
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 15m
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+  script:
+    - echo "=== Validating ${APP_PATH} (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r ${APP_PATH}/. /tmp/test-app/
+    - cd /tmp/test-app
+    - pnpm install --no-frozen-lockfile
+    - |
+      if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)" 2>/dev/null; then
+        echo ">>> pnpm build"
+        pnpm build
+      else
+        echo ">>> No build script, skipping"
+      fi
+    - |
+      if node -e "process.exit(require('./package.json').scripts?.typecheck ? 0 : 1)" 2>/dev/null; then
+        echo ">>> pnpm typecheck"
+        pnpm typecheck
+      else
+        echo ">>> No typecheck script, skipping"
+      fi
+    - echo "=== ${APP_PATH} OK ==="
+
+# ============================================================
+#  Stage 1: Validate (degit simulation)
+# ============================================================
+
+# --- Web boilerplates (Node.js) ---
+validate:web:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/react-router-spa-cloudflare
+          - web/react-router-ssr-cloudflare
+          - web/tanstack-router-spa
+          - web/tanstack-start-ssr
+
+# --- Bot TypeScript boilerplates (Node.js) ---
+validate:bot-ts:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - bot/slack-processor-ts
+          - bot/slack-processor-ts-cloudflare
+
+# --- CLI TypeScript (Node.js) ---
+validate:cli-ts:
+  extends: .degit-node
+  variables:
+    APP_PATH: cli/ink-ts
+
+# --- Native App boilerplates (frontend only, Tauri build는 Rust 필요) ---
+validate:native-app:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - native-app/tauri-react
+          - native-app/tauri-react-router
+
+# --- CLI Rust (ratatui-rs) ---
+validate:cli-rust:
+  stage: validate
+  image: rust:1.83-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 30m
+  cache:
+    key: cargo-ratatui
+    paths:
+      - .cargo-cache/registry/cache/
+      - .cargo-cache/registry/index/
+      - .cargo-cache/git/db/
+    policy: pull-push
+  variables:
+    CARGO_HOME: ${CI_PROJECT_DIR}/.cargo-cache
+  script:
+    - echo "=== Validating cli/ratatui-rs (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r cli/ratatui-rs/. /tmp/test-app/
+    - cd /tmp/test-app
+    - cargo check
+    - echo "=== cli/ratatui-rs OK ==="
+
+# --- CLI Go (bubbletea-go) ---
+validate:cli-go:
+  stage: validate
+  image: golang:1.23-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 10m
+  variables:
+    GOPATH: ${CI_PROJECT_DIR}/.go-cache
+  cache:
+    key: go-bubbletea
+    paths:
+      - .go-cache/pkg/mod/
+    policy: pull-push
+  script:
+    - echo "=== Validating cli/bubbletea-go (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r cli/bubbletea-go/. /tmp/test-app/
+    - cd /tmp/test-app
+    - go mod tidy
+    - go build ./cmd
+    - echo "=== cli/bubbletea-go OK ==="
+
+# --- Bot Python (slack-processor-python) ---
+validate:bot-python:
+  stage: validate
+  image: python:3.12-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 10m
+  script:
+    - echo "=== Validating bot/slack-processor-python (degit simulation) ==="
+    - pip install uv
+    - mkdir -p /tmp/test-app
+    - cp -r bot/slack-processor-python/. /tmp/test-app/
+    - cd /tmp/test-app
+    - uv venv
+    - . .venv/bin/activate
+    - uv pip install -e ".[dev]" 2>/dev/null || uv pip install -e .
+    - |
+      if [ -f "pyproject.toml" ] && grep -q "ruff" pyproject.toml; then
+        uv pip install ruff
+        echo ">>> ruff check"
+        ruff check src/ || true
+      fi
+    - |
+      if [ -f "pyproject.toml" ] && grep -q "mypy" pyproject.toml; then
+        uv pip install mypy
+        echo ">>> mypy (non-blocking)"
+        mypy src/ || true
+      fi
+    - echo "=== bot/slack-processor-python OK ==="
+
+# ============================================================
+#  Stage 2: Docker Build Verification
+# ============================================================
+
+docker:build:
+  stage: docker
+  image: docker:27
   services:
-    - name: docker:dind
-      alias: docker
+    - docker:27-dind
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 20m
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
-    REGISTRY_URL: gitlab-registry.home.codepoet.site
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $REGISTRY_URL -u $CI_REGISTRY_USER --password-stdin
-
-# ─────────────────────────────────────────────
-# web/react-router-spa
-# ─────────────────────────────────────────────
-build-react-router-spa:
-  extends: .docker-build
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^web\/react-router-spa\/v.+/'
-  variables:
-    PKG_DIR: web/react-router-spa
-    IMAGE_NAME: ${REGISTRY_URL}/k-codepoet/my-boilerplates/web/react-router-spa
+  parallel:
+    matrix:
+      - APP_PATH:
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/tanstack-start-ssr
+          - bot/slack-processor-python
   script:
-    - VERSION=${CI_COMMIT_TAG##*/}
-    - echo "Building ${IMAGE_NAME}:${VERSION}"
-    - docker build -t ${IMAGE_NAME}:${VERSION} -t ${IMAGE_NAME}:latest ${PKG_DIR}
-    - docker push ${IMAGE_NAME}:${VERSION}
-    - docker push ${IMAGE_NAME}:latest
+    - echo "=== Docker build ${APP_PATH} ==="
+    - cd ${APP_PATH}
+    - docker build -t test-boilerplate:ci .
+    - echo "=== Docker build ${APP_PATH} OK ==="

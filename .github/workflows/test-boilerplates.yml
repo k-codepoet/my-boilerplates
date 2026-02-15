@@ -7,16 +7,32 @@ on:
     branches: [main]
 
 jobs:
-  test-degit:
-    name: Test degit copy
+  # ============================================================
+  #  Node.js Boilerplates (degit simulation)
+  # ============================================================
+
+  test-node:
+    name: "${{ matrix.path }}"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        boilerplate:
-          - react-router-ssr
-          - react-router-spa
-          - react-router-ssr-cloudflare
-          - react-router-spa-cloudflare
+        path:
+          # web
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/react-router-spa-cloudflare
+          - web/react-router-ssr-cloudflare
+          - web/tanstack-router-spa
+          - web/tanstack-start-ssr
+          # bot (TypeScript)
+          - bot/slack-processor-ts
+          - bot/slack-processor-ts-cloudflare
+          # cli (TypeScript)
+          - cli/ink-ts
+          # native-app (frontend only)
+          - native-app/tauri-react
+          - native-app/tauri-react-router
 
     steps:
       - uses: actions/checkout@v4
@@ -31,45 +47,127 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install degit
-        run: npm install -g degit
-
       - name: Simulate degit copy
         run: |
-          # degit은 git repo에서 복사하므로, 로컬에서는 cp로 시뮬레이션
           mkdir -p /tmp/test-app
-          cp -r web/${{ matrix.boilerplate }}/. /tmp/test-app/
-          ls -la /tmp/test-app/
-
-      - name: Verify .github workflows copied
-        run: |
-          if [ -d "web/${{ matrix.boilerplate }}/.github" ]; then
-            echo "✅ .github directory exists in source"
-            ls -la /tmp/test-app/.github/workflows/ || echo "⚠️ No workflows found"
-          else
-            echo "ℹ️ No .github directory in this boilerplate"
-          fi
+          cp -r ${{ matrix.path }}/. /tmp/test-app/
 
       - name: Install dependencies
         working-directory: /tmp/test-app
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
         working-directory: /tmp/test-app
-        run: pnpm build
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)" 2>/dev/null; then
+            pnpm build
+          else
+            echo "No build script, skipping"
+          fi
 
       - name: Typecheck
         working-directory: /tmp/test-app
-        run: pnpm typecheck
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.typecheck ? 0 : 1)" 2>/dev/null; then
+            pnpm typecheck
+          else
+            echo "No typecheck script, skipping"
+          fi
+
+  # ============================================================
+  #  Rust CLI (ratatui-rs)
+  # ============================================================
+
+  test-rust:
+    name: cli/ratatui-rs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli/ratatui-rs
+
+      - name: Simulate degit & build
+        run: |
+          mkdir -p /tmp/test-app
+          cp -r cli/ratatui-rs/. /tmp/test-app/
+          cd /tmp/test-app
+          cargo check
+
+  # ============================================================
+  #  Go CLI (bubbletea-go)
+  # ============================================================
+
+  test-go:
+    name: cli/bubbletea-go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Simulate degit & build
+        run: |
+          mkdir -p /tmp/test-app
+          cp -r cli/bubbletea-go/. /tmp/test-app/
+          cd /tmp/test-app
+          go mod tidy
+          go build ./cmd
+
+  # ============================================================
+  #  Python Bot (slack-processor-python)
+  # ============================================================
+
+  test-python:
+    name: bot/slack-processor-python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Simulate degit & validate
+        run: |
+          mkdir -p /tmp/test-app
+          cp -r bot/slack-processor-python/. /tmp/test-app/
+          cd /tmp/test-app
+          uv venv
+          . .venv/bin/activate
+          uv pip install -e ".[dev]" 2>/dev/null || uv pip install -e .
+          if [ -f "pyproject.toml" ] && grep -q "ruff" pyproject.toml; then
+            uv pip install ruff
+            ruff check src/ || true
+          fi
+
+  # ============================================================
+  #  Docker Build Verification
+  # ============================================================
 
   test-docker:
-    name: Test Docker build
+    name: "docker: ${{ matrix.path }}"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        boilerplate:
-          - react-router-ssr
-          - react-router-spa
+        path:
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/tanstack-start-ssr
+          - bot/slack-processor-python
 
     steps:
       - uses: actions/checkout@v4
@@ -80,8 +178,8 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
-          context: web/${{ matrix.boilerplate }}
+          context: ${{ matrix.path }}
           push: false
-          tags: test-${{ matrix.boilerplate }}:latest
+          tags: test-boilerplate:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
