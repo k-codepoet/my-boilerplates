@@ -4,193 +4,157 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Craftify Boilerplates - a monorepo of production-ready starter templates for web applications, CLI/TUI tools, desktop apps, and bots. Designed for use with `degit` for quick project initialization and integrates with the Craftify CLI framework (`/craftify:poc`).
+Craftify Boilerplates - a monorepo of production-ready starter templates for web applications, CLI/TUI tools, desktop apps, game engines, and bots. Designed for use with `degit` for quick project initialization and integrates with the Craftify CLI framework (`/craftify:poc`).
+
+## Monorepo Structure
+
+```
+web/                              # 웹 프론트엔드/풀스택 (6종)
+├── react-router-ssr/             # SSR, Docker
+├── react-router-spa/             # SPA, Docker+Nginx
+├── react-router-ssr-cloudflare/  # SSR, Workers
+├── react-router-spa-cloudflare/  # SPA, Pages
+├── tanstack-start-ssr/           # SSR, vinxi+Docker
+└── tanstack-router-spa/          # SPA, Vite
+→ 상세: web/README.md · web/docs/index.md
+
+cli/                              # CLI/TUI (3종)
+├── ratatui-rs/                   # Rust + Ratatui
+├── bubbletea-go/                 # Go + Bubbletea
+└── ink-ts/                       # TypeScript + Ink
+→ 상세: cli/README.md · cli/docs/index.md
+
+native-app/                       # 데스크톱 앱 (2종)
+├── tauri-react-router/           # Tauri v2, 멀티 페이지
+└── tauri-react/                  # Tauri v2, 싱글 페이지
+→ 상세: native-app/README.md · native-app/docs/index.md
+
+bot/                              # Bot/Processor (3종)
+├── slack-processor-ts/           # Slack Bolt, Docker
+├── slack-processor-ts-cloudflare/ # Hono+D1, Workers
+└── slack-processor-python/       # slack-bolt, Docker
+→ 상세: bot/README.md · bot/docs/index.md
+
+game/                             # 게임 엔진 (2종)
+├── msw-engine/                   # MSW 엔진 코어, Vite
+└── msw-react-router-spa/         # MSW + React Router SPA
+→ 상세: game/README.md · game/docs/
+
+lib/                              # 공유 패키지 (placeholder)
+```
 
 ## Common Commands
 
-### Root Level (Turbo orchestrated)
 ```bash
-pnpm build      # Build all packages
-pnpm dev        # Start dev servers for all packages (persistent)
-pnpm lint       # Lint all packages
-pnpm clean      # Clean build artifacts
+# Root (Turbo)
+pnpm build | dev | lint | clean
+
+# Web (React Router)
+pnpm dev | build | typecheck
+
+# Web (Cloudflare)
+pnpm start | deploy
+
+# TanStack Start
+pnpm dev | build | start    # vinxi 기반
+
+# TanStack Router SPA
+pnpm dev | build             # Vite 기반
+
+# Native App (Tauri v2)
+pnpm dev | tauri:dev | tauri:build
+
+# CLI - Rust
+cargo run | cargo build --release
+
+# CLI - Go
+go run ./cmd | go build -o mycli ./cmd
+
+# CLI - TypeScript
+pnpm dev | build
+
+# Bot - TypeScript
+pnpm dev | build | start
+
+# Bot - Cloudflare
+pnpm dev | deploy | db:init | db:init:remote
+
+# Bot - Python
+uv venv && source .venv/bin/activate && uv pip install -e . && python -m src.main
+
+# Game
+pnpm dev | build | typecheck
 ```
 
-### Per-Boilerplate Commands
+## Technology Stack
 
-**Web (React Router):**
-```bash
-pnpm dev        # react-router dev (HMR)
-pnpm build      # react-router build
-pnpm typecheck  # react-router typegen && tsc
-```
+| 영역 | 기술 |
+|------|------|
+| Package Manager | pnpm v10.12+ (corepack) |
+| Monorepo | Turbo v2.5+ |
+| Build | Vite 7, vinxi (TanStack Start only) |
+| Framework | React Router v7, TanStack Router/Start |
+| Styling | Tailwind CSS v4, OKLch, shadcn/ui (new-york), lucide-react, Inter |
+| Types | TypeScript strict, `verbatimModuleSyntax: true` |
+| Desktop | Tauri v2 (Rust) |
+| Python | uv, ruff, mypy (strict) |
 
-**Web SSR-Cloudflare:**
-```bash
-pnpm start      # wrangler dev (local Workers runtime)
-pnpm deploy     # build + wrangler deploy
-```
+## Key Patterns (Quick Reference)
 
-**TanStack Start/Router (uses vinxi, not Vite directly):**
-```bash
-pnpm dev        # vinxi dev
-pnpm build      # vinxi build
-pnpm start      # node .output/server/index.mjs
-```
+**Path Aliases:** `~/*` → `./app/*` (web/native/game). TanStack uses `@/*` → `./src/*`. msw-engine uses `~/*` → `./src/*`.
 
-**Native App (Tauri v2):**
-```bash
-pnpm dev         # Frontend only (Vite in browser)
-pnpm tauri:dev   # Full Tauri app with hot reload
-pnpm tauri:build # Build platform installers (exe/dmg/deb)
-```
+**Vite Plugin Order:** `tailwindcss()` → framework plugin → `tsconfigPaths()`. Cloudflare SSR prepends `cloudflareDevProxy()`. TanStack order differs — see `web/README.md`.
 
-**CLI - Rust (ratatui-rs):**
-```bash
-cargo run                    # Local run
-cargo build --release        # Release build (opt-level=z, lto, strip)
-git tag v0.1.0 && git push origin v0.1.0  # Trigger npm release pipeline
-```
+**Docker:** Multi-stage (builder → runner) on `node:22-alpine`. SPA uses nginx with `try_files` fallback.
 
-**CLI - Go (bubbletea-go):**
-```bash
-go mod tidy      # Install deps
-go run ./cmd     # Local run
-go build -o mycli ./cmd  # Build
-```
+**CLI npm Distribution:** `npm/bin/cli.js` + `install.js` → 6 platform optional deps. Tag push triggers CI build + npm publish.
 
-**CLI - TypeScript (ink-ts):**
-```bash
-pnpm dev         # tsx watch src/cli.tsx
-pnpm build       # tsc
-```
+**MSW Game Engine:** Scene → GameObject → Trait composition. Adapter pattern for pluggable renderers. **Scene must never re-poll input** — use `update(dt, collisions, input)` parameter.
 
-**Bot - TypeScript (slack-processor-ts):**
-```bash
-pnpm dev         # tsx watch src/index.ts
-pnpm build       # tsc
-pnpm start       # node dist/index.js
-```
-
-**Bot - Cloudflare (slack-processor-ts-cloudflare):**
-```bash
-pnpm dev             # wrangler dev
-pnpm deploy          # wrangler deploy
-pnpm db:init         # D1 local schema setup
-pnpm db:init:remote  # D1 remote schema setup
-```
-
-**Bot - Python (slack-processor-python):**
-```bash
-uv venv && source .venv/bin/activate
-uv pip install -e .
-python -m src.main
-# Linting: ruff check src/  |  Type checking: mypy src/
-```
-
-## Architecture
-
-### Monorepo Structure
-```
-web/                          # Web frontend/fullstack
-├── react-router-ssr/         # SSR (Node.js, Docker)
-├── react-router-spa/         # SPA (Docker/nginx)
-├── react-router-ssr-cloudflare/  # SSR (Cloudflare Workers)
-├── react-router-spa-cloudflare/  # SPA (Cloudflare Pages)
-├── tanstack-start-ssr/       # TanStack Start SSR (vinxi)
-└── tanstack-router-spa/      # TanStack Router SPA (vinxi)
-
-cli/                          # CLI/TUI applications
-├── ratatui-rs/               # Rust + Ratatui (smallest binary)
-├── bubbletea-go/             # Go + Charm ecosystem
-└── ink-ts/                   # TypeScript + Ink (React for terminal)
-
-native-app/                   # Desktop applications (Tauri v2)
-├── tauri-react-router/       # Multi-page (React Router)
-└── tauri-react/              # Single-page (plain React)
-
-bot/                          # Bot/processor applications
-├── slack-processor-ts/       # Slack bolt, Docker (Node.js)
-├── slack-processor-ts-cloudflare/  # Hono + D1, Cloudflare Workers
-└── slack-processor-python/   # slack-bolt, Docker (Python/uv)
-
-lib/                          # Shared packages (placeholder, empty)
-```
-
-### Key Architectural Patterns
-
-**Web SPA pattern:** `app/root.tsx` → `app/routes.ts` → `app/routes/` pages. Vite plugin order matters: `tailwindcss()` → framework plugin → `tsconfigPaths()`.
-
-**Web SSR adds:** `app/entry.server.tsx` (renderToReadableStream + isbot detection). Cloudflare variants add `workers/app.ts` entry + `wrangler.toml`.
-
-**Docker variants:** Multi-stage builds (builder → runner) on `node:22-alpine`. SPA uses nginx with `try_files $uri $uri/ /index.html` fallback and 1-year immutable cache on `/assets/`.
-
-**CLI npm distribution (Rust/Go):** Both use identical `npm/` structure with `bin/cli.js` (entry) + `bin/install.js` (platform binary loader). 6 platform optional deps: `{darwin,linux,win32}-{arm64,x64}`. GitHub Actions builds all platforms on tag push and publishes to npm.
-
-**Bot Cloudflare variant:** Uses Hono (not Slack Bolt) as web framework with D1 database binding. Secrets managed via `wrangler secret put`.
-
-**Tauri apps:** `src/` (React frontend) + `src-tauri/` (Rust backend). Configured with plugins: fs, dialog, shell, updater, process. Updater pubkey needs setup for production.
-
-### Technology Stack
-- **Package Manager**: pnpm v10.12+ (enforced via corepack)
-- **Monorepo**: Turbo v2.5+
-- **Build**: Vite 7 (web/native), vinxi (TanStack Start/Router)
-- **Framework**: React Router v7, TanStack Router/Start
-- **Styling**: Tailwind CSS v4 with OKLch color system
-- **UI**: shadcn/ui (new-york style), lucide-react icons, Inter font
-- **Types**: TypeScript strict mode, `verbatimModuleSyntax: true`
-- **Desktop**: Tauri v2 (Rust backend)
-- **Python tooling**: uv (package manager), ruff (linter), mypy (strict)
-
-### Path Aliases & shadcn/ui
-All web and native-app boilerplates use `~/*` → `./app/*`. Components.json configured with: components at `~/components/ui`, utils at `~/lib/utils`, hooks at `~/hooks`. Base color: neutral.
-
-## CI/CD
-
-### Validation Pipeline (GitHub Actions + GitLab CI)
-Both pipelines follow the same pattern: **degit simulation** - copies each boilerplate to a temp directory, installs deps, runs build + typecheck. This validates each template works standalone.
-
-- **Node.js boilerplates**: Node 22, pnpm via corepack
-- **Rust**: Stable toolchain, cross-compilation for Linux ARM64
-- **Go**: 1.23 with module caching
-- **Python**: 3.12 with uv, ruff lint (non-blocking), mypy (non-blocking)
-- **Docker builds**: Verified for react-router-spa, react-router-ssr, tanstack-start-ssr, slack-processor-python
-
-### Cloudflare Deployment Workflows
-- SSR Workers: Environment split - `preview` for PRs, `production` for main
-- SPA Pages: PR preview with auto-comment containing preview URL
-- Both use `cloudflare/wrangler-action@v3`
-
-### Required Secrets
-- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (Cloudflare deployments)
-- `NPM_TOKEN` (CLI binary publishing)
-- `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` (bot projects, via wrangler secret or env)
-
-## Boilerplate Naming Convention
-```
-{framework}-{rendering}              # Generic (Node.js/Docker)
-{framework}-{rendering}-{platform}   # Platform-specific (cloudflare)
-```
+**Naming Convention:** `{framework}-{rendering}[-{platform}]`
 
 ## Runtime Requirements
 
-| Category | Runtime | Version File |
-|----------|---------|-------------|
-| web/*, bot/*-ts, native-app/* | Node.js 22 | `.nvmrc` |
-| bot/*-python | Python 3.11+ | `.python-version` |
-| cli/ratatui-rs, native-app/* | Rust (stable) | rustup |
-| cli/bubbletea-go | Go 1.23 | go.mod |
+| Category | Runtime | Version |
+|----------|---------|---------|
+| web/*, bot/*-ts, native-app/*, game/* | Node.js | 22 (.nvmrc) |
+| bot/*-python | Python | 3.11+ (.python-version) |
+| cli/ratatui-rs, native-app/* | Rust | stable (rustup) |
+| cli/bubbletea-go | Go | 1.23 (go.mod) |
 
 ## Build Outputs
 
-| Boilerplate Type | Output Path |
-|-----------------|-------------|
-| React Router web | `build/client/`, `build/server/` |
+| Type | Output |
+|------|--------|
+| React Router | `build/client/`, `build/server/` |
 | TanStack Start | `.output/server/index.mjs` |
+| Vite SPA (MSW Engine, TanStack Router) | `dist/` |
 | Rust CLI | `target/release/` |
 | Go CLI | binary in project root |
 | TypeScript (tsc) | `dist/` |
 
+## CI/CD
+
+**Validation:** degit simulation — copies each boilerplate to temp, installs, builds, typechecks. GitHub Actions + GitLab CI.
+
+**Cloudflare:** `cloudflare/wrangler-action@v3`. SSR Workers: `preview`/`production` 환경 분리. SPA Pages: PR preview + auto-comment.
+
+**Required Secrets:** `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NPM_TOKEN`, `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`
+
+**Game:** Not yet in CI — add when stabilized.
+
 ## Testing
 
-No testing framework is configured in any boilerplate. Only `typecheck` (tsc --noEmit) is available for static analysis. Add vitest/playwright/etc. as needed per project.
+No testing framework configured. Only `typecheck` (tsc --noEmit) available. Add vitest/playwright as needed.
+
+## Deep Dive (Progressive Disclosure)
+
+각 카테고리의 상세 아키텍처, 선택 가이드, 구현 패턴:
+
+| 카테고리 | 요약 (README) | 상세 문서 (docs/) |
+|----------|-------------|-----------------|
+| **web/** | [web/README.md](web/README.md) | [index.md](web/docs/index.md) → 4개 문서 (공통스택, React Router, TanStack, 비교) |
+| **cli/** | [cli/README.md](cli/README.md) | [index.md](cli/docs/index.md) → 5개 문서 (Rust, Go, TS, npm배포, 비교) |
+| **native-app/** | [native-app/README.md](native-app/README.md) | [index.md](native-app/docs/index.md) → 4개 문서 (Tauri개요, React Router, React, 비교) |
+| **bot/** | [bot/README.md](bot/README.md) | [index.md](bot/docs/index.md) → 5개 문서 (공통패턴, TS, CF, Python, 비교) |
+| **game/** | [game/README.md](game/README.md) | [index.md](game/docs/index.md) → 6개 아키텍처 + [contributing.md](game/docs/contributing.md) · [ai-guide.md](game/docs/ai-guide.md) |
