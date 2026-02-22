@@ -1,4 +1,4 @@
-import type { Collision } from "~/engine/types";
+import type { Collision, InputState } from "~/engine/types";
 import { Scene } from "~/engine/Scene";
 import type { GameObject } from "~/engine/GameObject";
 import type { Movable } from "~/traits/Movable";
@@ -49,10 +49,9 @@ export class PlayScene extends Scene {
     this.addObject(createEnemy("enemy-1", 400, 526));
   }
 
-  update(dt: number, collisions: Collision[]): void {
-    super.update(dt, collisions);
+  update(dt: number, collisions: Collision[], input?: InputState): void {
+    super.update(dt, collisions, input);
 
-    const input = this.game?.adapter.input.poll();
     if (!input) return;
 
     const player = this.getObject("player");

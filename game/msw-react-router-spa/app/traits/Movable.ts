@@ -24,15 +24,16 @@ export class Movable extends Trait {
   }
 
   update(dt: number): void {
+    // Friction only applies to horizontal movement
     this.vx *= this.config.friction;
-    this.vy *= this.config.friction;
 
-    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-    if (speed > this.config.maxSpeed) {
-      const scale = this.config.maxSpeed / speed;
-      this.vx *= scale;
-      this.vy *= scale;
+    // Clamp horizontal speed
+    if (Math.abs(this.vx) > this.config.maxSpeed) {
+      this.vx = Math.sign(this.vx) * this.config.maxSpeed;
     }
+
+    // Stop tiny drift
+    if (Math.abs(this.vx) < 0.5) this.vx = 0;
 
     const transform = this.gameObject?.state.transform;
     if (transform) {

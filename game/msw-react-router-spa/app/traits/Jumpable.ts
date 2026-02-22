@@ -18,7 +18,7 @@ export class Jumpable extends Trait {
     super();
     this.config = {
       jumpForce: config.jumpForce ?? -400,
-      gravity: config.gravity ?? 800,
+      gravity: config.gravity ?? 900,
       groundY: config.groundY ?? 500,
     };
   }
@@ -28,20 +28,23 @@ export class Jumpable extends Trait {
   }
 
   update(dt: number): void {
-    if (this.isGrounded) return;
-
     const movable = this.getMovable();
-    if (movable) {
-      movable.vy += this.config.gravity * dt;
-    }
-
     const transform = this.gameObject?.state.transform;
-    if (transform && transform.y >= this.config.groundY) {
-      transform.y = this.config.groundY;
-      if (movable) {
+    if (!transform || !movable) return;
+
+    if (!this.isGrounded) {
+      // Apply gravity to vertical velocity
+      movable.vy += this.config.gravity * dt;
+
+      // Hard ground limit (fallback safety)
+      if (transform.y >= this.config.groundY) {
+        transform.y = this.config.groundY;
         movable.vy = 0;
+        this.isGrounded = true;
       }
-      this.isGrounded = true;
+    } else {
+      // Reset vertical velocity when grounded
+      movable.vy = 0;
     }
   }
 

@@ -1,12 +1,14 @@
 import { GameObject } from "~/engine/GameObject";
 
+export const COIN_SIZE = 14;
+
 export function createCoin(id: string, x: number, y: number): GameObject {
   const coin = new GameObject(id, "coin");
 
   coin.state.transform.x = x;
   coin.state.transform.y = y;
-  coin.state.transform.scale.x = 0.5;
-  coin.state.transform.scale.y = 0.5;
+  coin.state.transform.scale.x = 1;
+  coin.state.transform.scale.y = 1;
 
   coin.state.visual.assetKey = "coin";
   coin.state.visual.state = "default";

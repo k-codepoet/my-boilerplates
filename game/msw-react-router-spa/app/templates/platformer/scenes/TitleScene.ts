@@ -1,4 +1,4 @@
-import type { Collision } from "~/engine/types";
+import type { Collision, InputState } from "~/engine/types";
 import { Scene } from "~/engine/Scene";
 
 export class TitleScene extends Scene {
@@ -10,10 +10,9 @@ export class TitleScene extends Scene {
     this.game!.getState().set("screen", "title");
   }
 
-  update(dt: number, collisions: Collision[]): void {
-    super.update(dt, collisions);
+  update(dt: number, collisions: Collision[], input?: InputState): void {
+    super.update(dt, collisions, input);
 
-    const input = this.game?.adapter.input.poll();
     if (input?.justPressed.has("jump")) {
       this.changeScene("play");
     }

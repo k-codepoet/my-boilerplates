@@ -71,7 +71,7 @@ export class Game {
       this._lastInput = input;
       this.adapter.physics.step(dt);
       const collisions = this.adapter.physics.getCollisions();
-      this._activeScene?.update(dt, collisions);
+      this._activeScene?.update(dt, collisions, input);
     };
 
     this.loop.onRender = () => {

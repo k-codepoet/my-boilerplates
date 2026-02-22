@@ -1,4 +1,4 @@
-import type { Collision } from "./types";
+import type { Collision, InputState } from "./types";
 import type { GameObject } from "./GameObject";
 import type { Game } from "./Game";
 import { EventBus } from "./EventBus";
@@ -23,7 +23,7 @@ export class Scene {
     // Override for scene setup
   }
 
-  update(dt: number, collisions: Collision[]): void {
+  update(dt: number, collisions: Collision[], _input?: InputState): void {
     for (const obj of this.objects.values()) {
       if (obj.active) {
         obj.update(dt);
