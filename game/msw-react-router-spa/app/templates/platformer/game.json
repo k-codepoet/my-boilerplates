@@ -1,0 +1,110 @@
+{
+  "id": "platformer-demo",
+  "version": "1.0.0",
+  "meta": {
+    "title": "Platformer Demo",
+    "description": "A simple 2D platformer demo built with MSW Engine",
+    "thumbnail": "",
+    "orientation": "landscape",
+    "resolution": { "width": 800, "height": 600 }
+  },
+  "assets": {
+    "player": {
+      "resourceId": "player",
+      "states": ["idle", "walk", "jump"],
+      "preload": true
+    },
+    "platform": {
+      "resourceId": "platform",
+      "states": ["default"],
+      "preload": true
+    },
+    "coin": {
+      "resourceId": "coin",
+      "states": ["default"],
+      "preload": true
+    },
+    "enemy": {
+      "resourceId": "enemy",
+      "states": ["walk"],
+      "preload": true
+    }
+  },
+  "scenes": {
+    "title": {
+      "name": "title",
+      "type": "menu",
+      "requiredAssets": [],
+      "objects": {},
+      "transitions": {
+        "start": { "target": "play" }
+      },
+      "camera": {
+        "bounds": { "x": 0, "y": 0, "width": 800, "height": 600 }
+      },
+      "ui": []
+    },
+    "play": {
+      "name": "play",
+      "type": "gameplay",
+      "requiredAssets": ["player", "platform", "coin", "enemy"],
+      "objects": {},
+      "transitions": {
+        "win": { "target": "gameover", "data": { "won": true } },
+        "lose": { "target": "gameover", "data": { "won": false } }
+      },
+      "camera": {
+        "bounds": { "x": 0, "y": 0, "width": 800, "height": 600 }
+      },
+      "ui": []
+    },
+    "gameover": {
+      "name": "gameover",
+      "type": "result",
+      "requiredAssets": [],
+      "objects": {},
+      "transitions": {
+        "restart": { "target": "title" }
+      },
+      "camera": {
+        "bounds": { "x": 0, "y": 0, "width": 800, "height": 600 }
+      },
+      "ui": []
+    }
+  },
+  "entryScene": "title",
+  "inputMap": {
+    "move_left": ["ArrowLeft", "KeyA"],
+    "move_right": ["ArrowRight", "KeyD"],
+    "jump": ["ArrowUp", "KeyW", "Space"]
+  },
+  "settings": {
+    "physics": {
+      "gravity": { "x": 0, "y": 800 }
+    },
+    "audio": {
+      "masterVolume": 1.0
+    }
+  },
+  "rules": {
+    "winCondition": {
+      "field": "score",
+      "operator": "gte",
+      "value": 100
+    },
+    "loseCondition": {
+      "field": "health",
+      "operator": "lte",
+      "value": 0
+    },
+    "scoring": {
+      "field": "score",
+      "displayName": "Score"
+    }
+  },
+  "stack": {
+    "adapter": "canvas",
+    "resourcePipeline": "lite",
+    "physics": null
+  }
+}
