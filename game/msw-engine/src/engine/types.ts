@@ -345,7 +345,7 @@ export interface GameDefinitionData {
   inputMap: InputMap;
   rules: GameRules;
   stack: {
-    adapter: "canvas" | "phaser" | "pixi";
+    adapter: "canvas" | "phaser" | "pixi" | "three";
     resourcePipeline: "lite" | "full";
     physics: null | "arcade" | "matter";
   };

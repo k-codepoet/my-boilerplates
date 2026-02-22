@@ -1,6 +1,6 @@
 import type { DrawCommand } from "~/engine/types";
 import { Game } from "~/engine/Game";
-import { CanvasAdapter } from "~/adapters/canvas/CanvasAdapter";
+import { PixiAdapter } from "~/adapters/pixi/PixiAdapter";
 import { TitleScene } from "./scenes/TitleScene";
 import { PlayScene } from "./scenes/PlayScene";
 import { GameOverScene } from "./scenes/GameOverScene";
@@ -11,7 +11,12 @@ export async function createPlatformerGame(
   width = 800,
   height = 600,
 ): Promise<Game> {
-  const adapter = new CanvasAdapter();
+  const adapter = new PixiAdapter();
+
+  // PixiJS v8 requires async init — do it before game.start()
+  adapter.init({ canvas, width, height, physics: gameDefinition.settings?.physics });
+  await adapter.waitForInit();
+
   const game = new Game(adapter);
 
   // Register scenes
@@ -19,8 +24,8 @@ export async function createPlatformerGame(
   game.registerScene("play", new PlayScene());
   game.registerScene("gameover", new GameOverScene());
 
-  // Start the game (inits adapter, changes to entry scene, starts loop)
-  await game.start(gameDefinition.entryScene, canvas, width, height);
+  // Start the game — adapter already initialized, don't set config to skip re-init
+  await game.start(gameDefinition.entryScene);
 
   // Init input mapping after adapter is initialized
   game.adapter.input.init(gameDefinition.inputMap);
