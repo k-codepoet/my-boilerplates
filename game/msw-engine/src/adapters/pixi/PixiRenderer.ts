@@ -55,8 +55,8 @@ export class PixiRenderer {
       width,
       height,
       backgroundColor: 0x000000,
-      antialias: false,
-      preference: "webgl",
+      autoStart: false,
+      hello: false,
     });
 
     this.worldContainer = new Container();

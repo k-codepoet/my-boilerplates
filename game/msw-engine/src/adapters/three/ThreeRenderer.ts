@@ -1,13 +1,17 @@
 import {
   CanvasTexture,
   Group,
+  Mesh,
+  MeshBasicMaterial,
   NearestFilter,
   OrthographicCamera,
+  PlaneGeometry,
   Scene,
   Sprite,
   SpriteMaterial,
   WebGLRenderer,
   Color,
+  type Object3D,
 } from "three";
 import type {
   CameraState,
@@ -18,8 +22,8 @@ import type {
 } from "~/engine/types";
 
 interface SpriteEntry {
-  mesh: Sprite;
-  material: SpriteMaterial;
+  object: Object3D;
+  material: SpriteMaterial | MeshBasicMaterial;
   assetKey: string;
   assetState: string;
   layer: number;
@@ -27,6 +31,10 @@ interface SpriteEntry {
   frameTimer: number;
   fps: number;
   frames: ImageBitmap[];
+  isPlaceholder: boolean;
+  currentScaleX: number;
+  currentScaleY: number;
+  flipX: boolean;
 }
 
 type SFXHandler = (soundId: string, volume: number) => void;
@@ -55,7 +63,9 @@ export class ThreeRenderer {
     this.renderer.setClearColor(0x000000);
 
     // Orthographic camera: top-left origin, y-down to match MSW coordinate system
-    this.camera = new OrthographicCamera(0, width, 0, height, -10000, 10000);
+    // Three.js convention: (left, right, top, bottom)
+    // For y-down: top=height, bottom=0 then negate Y in positions
+    this.camera = new OrthographicCamera(0, width, 0, -height, -10000, 10000);
     this.camera.position.z = 100;
 
     this.scene = new Scene();
@@ -82,20 +92,33 @@ export class ThreeRenderer {
         case "SPAWN": {
           const frames = this.resolveFrames(cmd.assetKey, cmd.assetState);
           const texture = this.bitmapToTexture(frames[0]);
-          const material = new SpriteMaterial({ map: texture, transparent: true });
-          const sprite = new Sprite(material);
-          // Position: MSW y-down, Three.js camera set to y-down
-          sprite.position.set(cmd.x, cmd.y, cmd.layer * 0.01);
-          sprite.center.set(0.5, 0.5);
-          if (frames[0]) {
-            sprite.scale.set(frames[0].width, frames[0].height, 1);
+          let object: Object3D;
+          let material: SpriteMaterial | MeshBasicMaterial;
+          let isPlaceholder = false;
+
+          if (texture) {
+            const spriteMat = new SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new Sprite(spriteMat);
+            sprite.center.set(0.5, 0.5);
+            object = sprite;
+            material = spriteMat;
           } else {
-            sprite.scale.set(32, 32, 1);
+            // Lite pipeline: magenta colored rectangle placeholder
+            const mat = new MeshBasicMaterial({ color: 0xff00ff });
+            const geom = new PlaneGeometry(1, 1);
+            object = new Mesh(geom, mat);
+            material = mat;
+            isPlaceholder = true;
           }
-          world.add(sprite);
+
+          const baseW = frames[0]?.width ?? 32;
+          const baseH = frames[0]?.height ?? 32;
+          object.position.set(cmd.x, -cmd.y, cmd.layer * 0.01);
+          object.scale.set(baseW, baseH, 1);
+          world.add(object);
 
           this.sprites.set(cmd.id, {
-            mesh: sprite,
+            object,
             material,
             assetKey: cmd.assetKey,
             assetState: cmd.assetState,
@@ -104,6 +127,10 @@ export class ThreeRenderer {
             frameTimer: 0,
             fps: this.resolveFps(cmd.assetKey, cmd.assetState),
             frames,
+            isPlaceholder,
+            currentScaleX: 1,
+            currentScaleY: 1,
+            flipX: false,
           });
           break;
         }
@@ -111,9 +138,11 @@ export class ThreeRenderer {
         case "DESTROY": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            world.remove(entry.mesh);
+            world.remove(entry.object);
             entry.material.dispose();
-            entry.material.map?.dispose();
+            if ("map" in entry.material && entry.material.map) {
+              entry.material.map.dispose();
+            }
             this.sprites.delete(cmd.id);
           }
           break;
@@ -122,8 +151,8 @@ export class ThreeRenderer {
         case "MOVE": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            entry.mesh.position.x = cmd.x;
-            entry.mesh.position.y = cmd.y;
+            entry.object.position.x = cmd.x;
+            entry.object.position.y = -cmd.y;
           }
           break;
         }
@@ -131,7 +160,7 @@ export class ThreeRenderer {
         case "ROTATE": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            entry.mesh.rotation.z = -cmd.rotation; // Three.js rotation is CCW, MSW is CW
+            entry.object.rotation.z = -cmd.rotation;
           }
           break;
         }
@@ -139,10 +168,9 @@ export class ThreeRenderer {
         case "SCALE": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            const baseW = entry.frames[0]?.width ?? 32;
-            const baseH = entry.frames[0]?.height ?? 32;
-            const flipSign = entry.mesh.scale.x < 0 ? -1 : 1;
-            entry.mesh.scale.set(baseW * cmd.scaleX * flipSign, baseH * cmd.scaleY, 1);
+            entry.currentScaleX = cmd.scaleX;
+            entry.currentScaleY = cmd.scaleY;
+            this.applyScale(entry);
           }
           break;
         }
@@ -166,8 +194,8 @@ export class ThreeRenderer {
         case "FLIP": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            const absX = Math.abs(entry.mesh.scale.x);
-            entry.mesh.scale.x = cmd.flipX ? -absX : absX;
+            entry.flipX = cmd.flipX;
+            this.applyScale(entry);
           }
           break;
         }
@@ -176,6 +204,7 @@ export class ThreeRenderer {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
             entry.material.opacity = cmd.opacity;
+            entry.material.transparent = true;
           }
           break;
         }
@@ -183,7 +212,7 @@ export class ThreeRenderer {
         case "VISIBLE": {
           const entry = this.sprites.get(cmd.id);
           if (entry) {
-            entry.mesh.visible = cmd.visible;
+            entry.object.visible = cmd.visible;
           }
           break;
         }
@@ -209,10 +238,10 @@ export class ThreeRenderer {
   render(dt: number): void {
     if (!this.renderer || !this.scene || !this.camera || !this.worldGroup) return;
 
-    // Apply camera
+    // Apply camera (negate Y for y-down → y-up mapping)
     this.worldGroup.position.set(
       this.width / 2 - this.cameraState.x * this.cameraState.zoom,
-      this.height / 2 - this.cameraState.y * this.cameraState.zoom,
+      -(this.height / 2 - this.cameraState.y * this.cameraState.zoom),
       0,
     );
     this.worldGroup.scale.set(this.cameraState.zoom, this.cameraState.zoom, 1);
@@ -236,9 +265,22 @@ export class ThreeRenderer {
     this.renderer.render(this.scene, this.camera);
   }
 
+  private applyScale(entry: SpriteEntry): void {
+    const baseW = entry.frames[0]?.width ?? 32;
+    const baseH = entry.frames[0]?.height ?? 32;
+    const flipSign = entry.flipX ? -1 : 1;
+    entry.object.scale.set(
+      baseW * entry.currentScaleX * flipSign,
+      baseH * entry.currentScaleY,
+      1,
+    );
+  }
+
   destroy(): void {
     for (const entry of this.sprites.values()) {
-      entry.material.map?.dispose();
+      if ("map" in entry.material && entry.material.map) {
+        entry.material.map.dispose();
+      }
       entry.material.dispose();
     }
     this.sprites.clear();

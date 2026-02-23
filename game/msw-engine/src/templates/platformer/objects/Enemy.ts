@@ -1,6 +1,9 @@
 import { GameObject } from "~/engine/GameObject";
 import { Movable } from "~/traits/Movable";
 
+export const ENEMY_W = 26;
+export const ENEMY_H = 26;
+
 export function createEnemy(id: string, x: number, y: number): GameObject {
   const enemy = new GameObject(id, "enemy");
 
@@ -8,8 +11,8 @@ export function createEnemy(id: string, x: number, y: number): GameObject {
 
   enemy.state.transform.x = x;
   enemy.state.transform.y = y;
-  enemy.state.transform.scale.x = 0.75;
-  enemy.state.transform.scale.y = 0.75;
+  enemy.state.transform.scale.x = 1;
+  enemy.state.transform.scale.y = 1;
 
   enemy.state.visual.assetKey = "enemy";
   enemy.state.visual.state = "walk";
