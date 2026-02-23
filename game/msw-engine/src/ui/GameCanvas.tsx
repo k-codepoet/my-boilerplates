@@ -5,6 +5,9 @@ import type { AdapterType, ResourceMode } from "~/templates/platformer/Platforme
 import { DebugOverlay } from "./DebugOverlay";
 import { HUD } from "./HUD";
 
+const STORAGE_KEY_ADAPTER = "msw-engine:adapter";
+const STORAGE_KEY_RESOURCE = "msw-engine:resource";
+
 const ADAPTER_OPTIONS: { value: AdapterType; label: string }[] = [
   { value: "canvas", label: "Canvas 2D" },
   { value: "pixi", label: "PixiJS" },
@@ -35,8 +38,12 @@ interface GameUIState {
 export function GameCanvas({ width = 800, height = 600 }: GameCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Game | null>(null);
-  const [adapterType, setAdapterType] = useState<AdapterType>("canvas");
-  const [resourceMode, setResourceMode] = useState<ResourceMode>("programmatic");
+  const [adapterType, setAdapterType] = useState<AdapterType>(
+    () => (localStorage.getItem(STORAGE_KEY_ADAPTER) as AdapterType) || "canvas",
+  );
+  const [resourceMode, setResourceMode] = useState<ResourceMode>(
+    () => (localStorage.getItem(STORAGE_KEY_RESOURCE) as ResourceMode) || "programmatic",
+  );
   const [uiState, setUIState] = useState<GameUIState>({
     score: 0,
     health: 3,
@@ -106,7 +113,7 @@ export function GameCanvas({ width = 800, height = 600 }: GameCanvasProps) {
         {ADAPTER_OPTIONS.map((opt) => (
           <button
             key={opt.value}
-            onClick={() => setAdapterType(opt.value)}
+            onClick={() => { localStorage.setItem(STORAGE_KEY_ADAPTER, opt.value); setAdapterType(opt.value); }}
             className={`px-3 py-1 text-sm rounded font-medium transition-colors ${
               adapterType === opt.value
                 ? "bg-blue-600 text-white"
@@ -122,7 +129,7 @@ export function GameCanvas({ width = 800, height = 600 }: GameCanvasProps) {
         {RESOURCE_OPTIONS.map((opt) => (
           <button
             key={opt.value}
-            onClick={() => setResourceMode(opt.value)}
+            onClick={() => { localStorage.setItem(STORAGE_KEY_RESOURCE, opt.value); setResourceMode(opt.value); }}
             className={`px-3 py-1 text-xs rounded font-medium transition-colors ${
               resourceMode === opt.value
                 ? "bg-green-600 text-white"

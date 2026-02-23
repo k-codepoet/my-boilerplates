@@ -14,7 +14,7 @@ export function createPlatform(
   platform.state.transform.scale.x = width;
   platform.state.transform.scale.y = height;
 
-  platform.state.visual.assetKey = "platform";
+  platform.state.visual.assetKey = id === "ground" ? "ground" : "platform";
   platform.state.visual.state = "default";
   platform.state.visual.visible = true;
   platform.state.visual.opacity = 1;

@@ -10,7 +10,7 @@ export const PLAYER_H = 36;
 export function createPlayer(id = "player"): GameObject {
   const player = new GameObject(id, "player");
 
-  player.addTrait(new Movable({ speed: 200, friction: 0.82, maxSpeed: 280 }));
+  player.addTrait(new Movable({ speed: 200, friction: 1.0, maxSpeed: 800 }));
   player.addTrait(new Jumpable({ jumpForce: -580, gravity: 800, groundY: 550 - PLAYER_H }));
   player.addTrait(new Damageable({ maxHP: 3 }));
   player.addTrait(new Scorer());
