@@ -109,7 +109,7 @@ pnpm dev | build | typecheck
 
 **CLI npm Distribution:** `npm/bin/cli.js` + `install.js` → 6 platform optional deps. Tag push triggers CI build + npm publish.
 
-**MSW Game Engine:** Scene → GameObject → Trait composition. Adapter pattern for pluggable renderers. **Scene must never re-poll input** — use `update(dt, collisions, input)` parameter.
+**MSW Game Engine:** Scene → GameObject → Trait composition. 4 adapters (Canvas/PixiJS/Three.js/Phaser) with runtime toggle. Programmatic sprites via OffscreenCanvas → ImageBitmap. Coordinate conversion: gameplay uses top-left, renderers use center-origin — `getRenderTransform()` bridges. **Scene must never re-poll input** — use `update(dt, collisions, input)` parameter.
 
 **Naming Convention:** `{framework}-{rendering}[-{platform}]`
 

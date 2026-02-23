@@ -25,7 +25,7 @@ MSW(Micro Scene World) Engine은 **Scene + GameObject + Trait 조합 패턴**으
 ## 핵심 아키텍처 (3줄 요약)
 
 **Scene -> GameObject -> Trait** 조합 패턴.
-어댑터로 렌더링 엔진 교체 가능 (Canvas 2D / Phaser / PixiJS).
+어댑터로 렌더링 엔진 런타임 교체 가능 (**Canvas 2D / PixiJS v8 / Three.js / Phaser 3**) — `stack.adapter` 설정 한 줄로 전환.
 AI는 `templates/` 안의 scenes, objects만 작성 — 엔진 코드는 건드리지 않는다.
 
 ```
@@ -36,20 +36,33 @@ templates/{genre}/
 └── objects/            # 게임 오브젝트 (팩토리 함수)
 ```
 
+**리소스 파이프라인 (2가지 모드):**
+- **Programmatic**: `OffscreenCanvas`로 스프라이트를 런타임 생성 → `ImageBitmap` → 어댑터에 전달
+- **File-based**: `exportSpritePNGs` 실행 → `public/assets/` PNG 저장 → 파일 경로로 로드
+
+좌표계: 게임플레이는 **좌상단 원점**, 렌더러는 **중심 원점** — `getRenderTransform()`으로 자동 변환.
+
 ---
 
 ## 현재 구현 상태
 
 | 기능 | 상태 | 비고 |
 |------|------|------|
-| Canvas 2D 어댑터 | 완료 | 렌더링, AABB 물리, Web Audio, 키보드 입력 |
-| 8개 기본 Trait | 완료 | Movable, Jumpable, Damageable, Scorer, Timer, Tappable, Collidable, Animated |
-| 플랫포머 템플릿 | 완료 | 3개 씬 (Title/Play/GameOver), 4종 오브젝트 |
-| React Router 통합 | 완료 | SPA 배포용 (`/play` 라우트) |
-| 메모리 최적화 | 완료 | TransformBuffer (Float32Array), ObjectPool, EventPool |
-| Phaser 어댑터 | 미구현 | `stack.adapter: "phaser"` 선언만 존재 |
-| PixiJS 어댑터 | 미구현 | 설계만 존재 |
-| 멀티플레이 | 미구현 | 설계 문서만 존재 |
+| Canvas 2D 어댑터 | ✅ 완료 | 렌더링, AABB 물리, Web Audio, 키보드 입력 |
+| PixiJS v8 어댑터 | ✅ 완료 | Sprite/Graphics 렌더링, 런타임 전환 |
+| Three.js 어댑터 | ✅ 완료 | 2.5D 렌더링, OrthographicCamera, 런타임 전환 |
+| Phaser 3 어댑터 | ✅ 완료 | Physics + Scene 래핑, 런타임 전환 |
+| 어댑터 런타임 토글 | ✅ 완료 | `stack.adapter` 설정 한 줄로 4종 전환 |
+| 프로그래매틱 스프라이트 | ✅ 완료 | OffscreenCanvas → ImageBitmap 파이프라인 |
+| 리소스 파이프라인 | ✅ 완료 | Programmatic / File-based 모드 토글 |
+| 좌표 변환 | ✅ 완료 | `getRenderTransform()` — 게임플레이↔렌더러 원점 변환 |
+| 점프 물리 수정 | ✅ 완료 | 좌표계 일관성 (commit `54d1665`) |
+| 게임플레이 동기화 | ✅ 완료 | Canvas/Pixi/Three/Phaser 동일 게임플레이 결과 |
+| 8개 기본 Trait | ✅ 완료 | Movable, Jumpable, Damageable, Scorer, Timer, Tappable, Collidable, Animated |
+| 플랫포머 템플릿 | ✅ 완료 | 3개 씬 (Title/Play/GameOver), 4종 오브젝트 |
+| React Router 통합 | ✅ 완료 | SPA 배포용 (`/play` 라우트) |
+| 메모리 최적화 | ✅ 완료 | TransformBuffer (Float32Array), ObjectPool, EventPool |
+| 멀티플레이 | ❌ 미구현 | 설계 문서만 존재 |
 
 ---
 
@@ -104,6 +117,18 @@ update(dt: number, collisions: Collision[], input?: InputState): void {
 - **빌드**: Vite 7 (msw-engine), React Router v7 (msw-react-router-spa)
 - **스타일링**: Tailwind CSS v4, shadcn/ui
 - **경로 별칭**: `~/*` -> `./src/*` (msw-engine) / `~/*` -> `./app/*` (msw-react-router-spa)
+
+---
+
+## 다음 작업 (Next Steps)
+
+- [ ] Pixi/Three/Phaser 어댑터 렌더링 테스트 (Canvas만 게임플레이 확인됨)
+- [ ] PNG 파일 생성 (`exportSpritePNGs` 실행 → `public/assets/platformer/`)
+- [ ] File-based 모드 독립 동작 확인 (Programmatic 없이 PNG만으로 실행)
+- [ ] `msw-react-router-spa`에 엔진 코드 동기화 (현재 msw-engine과 독립 사본으로 분기됨)
+- [ ] 추가 게임 템플릿 (클리커, 퍼즐)
+- [ ] CI 파이프라인 추가 (현재 CI 미포함)
+- [ ] 테스트 프레임워크 도입 (현재 typecheck만 존재)
 
 ---
 

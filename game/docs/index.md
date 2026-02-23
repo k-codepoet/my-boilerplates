@@ -12,6 +12,7 @@
 | [04-adapter-pattern.md](04-adapter-pattern.md) | 어댑터 패턴 — EngineAdapterInterface, 4개 어댑터 구현 (Canvas/PixiJS/Three.js/Phaser), 좌표 변환, 새 어댑터 추가 가이드 |
 | [05-memory-optimization.md](05-memory-optimization.md) | 메모리 최적화 — TransformBuffer, ObjectPool, EventPool, CommandPool |
 | [06-react-integration.md](06-react-integration.md) | React 통합 — GameCanvas 패턴, 60FPS/10Hz 이중 루프, React Router SPA 변형 |
+| [07-resource-pipeline.md](07-resource-pipeline.md) | 리소스 파이프라인 — 프로그래매틱(OffscreenCanvas→ImageBitmap) vs 파일 기반(PNG→AssetFactory), 런타임 토글, localStorage 지속 |
 
 ## 개발 가이드
 
