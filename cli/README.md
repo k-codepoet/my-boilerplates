@@ -71,6 +71,13 @@ pnpm typecheck         # tsc --noEmit
 | 의존성 수 | 3 crates | 2 modules | 5 packages |
 | 타입 안전성 | 컴파일 타임 (강) | 컴파일 타임 (중) | 빌드 타임 (strict) |
 
+## 다음 작업
+
+- [ ] CI 파이프라인 크로스컴파일 검증 (Rust 3 OS, Go 6 platform)
+- [ ] 테스트 프레임워크 도입 (Rust: cargo test, Go: go test, TS: vitest)
+- [ ] npm 배포 end-to-end 테스트 (tag push → CI → npm publish → npx 실행)
+- [ ] ink-ts Ink v5 마이그레이션 대비
+
 ## 상세 문서
 
 - [아키텍처 상세](docs/index.md) — 각 보일러플레이트 내부 구조, CI/CD 파이프라인, npm 배포 패턴 상세

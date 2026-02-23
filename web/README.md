@@ -83,6 +83,13 @@ cd my-app && pnpm install && pnpm dev
 | React Router (4개) | `~/*` | `./app/*` |
 | TanStack (2개) | `@/*` | `./src/*` |
 
+## 다음 작업
+
+- [ ] 테스트 프레임워크 도입 (vitest + playwright, 현재 typecheck만 존재)
+- [ ] Cloudflare Workers SSR 환경 분리 검증 (preview/production 독립 동작)
+- [ ] TanStack Start vinxi 빌드 안정성 확인 (vinxi 버전 업데이트 대응)
+- [ ] 보일러플레이트 간 공통 컴포넌트 추출 가능성 검토
+
 ## 상세 문서
 
 - [아키텍처 상세](docs/index.md) — 각 보일러플레이트 내부 구조, 비교 매트릭스, 배포 패턴, Cloudflare 바인딩 패턴

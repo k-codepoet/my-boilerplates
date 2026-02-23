@@ -113,6 +113,8 @@ pnpm dev | build | typecheck
 
 **Naming Convention:** `{framework}-{rendering}[-{platform}]`
 
+**작업 현황:** [context.md](context.md) — 전체 카테고리별 상태/다음 작업 대시보드. 각 카테고리 README의 "다음 작업" 섹션으로 연결.
+
 ## Runtime Requirements
 
 | Category | Runtime | Version |

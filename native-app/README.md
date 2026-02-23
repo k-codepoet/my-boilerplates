@@ -71,6 +71,13 @@ pnpm tauri:build      # 플랫폼 설치 파일 생성
 pnpm typecheck        # 타입 체크
 ```
 
+## 다음 작업
+
+- [ ] 자동 업데이트 (updater 플러그인) end-to-end 검증
+- [ ] CI 파이프라인 추가 (macOS/Windows/Linux 크로스 빌드)
+- [ ] 코드 서명 설정 가이드 (macOS notarization, Windows code signing)
+- [ ] 테스트 프레임워크 도입 (vitest + Tauri e2e)
+
 ## 상세 문서
 
 - [아키텍처 상세](docs/index.md) — Tauri 플러그인, capabilities 권한 시스템, 자동 업데이트, 빌드 최적화, 코드 서명

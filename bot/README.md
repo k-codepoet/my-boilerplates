@@ -78,6 +78,13 @@ ruff check src/ && mypy src/    # 린트 + 타입 검사
 | 타입 검사 | tsc | tsc | mypy --strict |
 | Docker | 2단계 (alpine) | N/A | 1단계 (slim) |
 
+## 다음 작업
+
+- [ ] 추가 프로세서 구현 (CSV, Excel, 오디오 등)
+- [ ] 테스트 프레임워크 도입 (TS: vitest, Python: pytest)
+- [ ] Cloudflare D1 마이그레이션 관리 도구 추가
+- [ ] Socket Mode ↔ HTTP Webhook 전환 가이드 문서화
+
 ## 상세 문서
 
 - [아키텍처 상세](docs/index.md) — 이벤트 처리 흐름, D1 스키마, 프로세서 구현 가이드, Socket Mode vs Webhook 비교, 전체 비교 매트릭스
