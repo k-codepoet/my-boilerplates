@@ -45,6 +45,25 @@ const updateUI = () => {
 };
 ```
 
+### 어댑터 / 리소스 모드 토글
+
+GameCanvas는 두 가지 런타임 설정을 제공한다:
+
+```
+┌──────────────────────────────────────────┐
+│  [Canvas 2D] [PixiJS] [Three.js] [Phaser]  ← 어댑터 선택
+│  Resources: [Programmatic] [File-based]     ← 리소스 모드
+│  ┌──────────────────────────────────────┐ │
+│  │          Game Canvas (800x600)        │ │
+│  └──────────────────────────────────────┘ │
+└──────────────────────────────────────────┘
+```
+
+- 토글 변경 시 useEffect가 다시 실행되어 게임 인스턴스를 재생성한다
+- 선택 값은 `localStorage`에 저장되어 새로고침 후에도 유지된다
+  - `msw-engine:adapter` — 어댑터 타입 (canvas/pixi/three/phaser)
+  - `msw-engine:resource` — 리소스 모드 (programmatic/file)
+
 ### 정리 (Cleanup)
 
 ```typescript
@@ -55,8 +74,9 @@ useEffect(() => {
     clearInterval(pollInterval);
     gameRef.current?.stop();
     gameRef.current = null;
+    canvas.remove();  // GPU 컨텍스트 정리 (React StrictMode 대응)
   };
-}, [width, height, updateUI]);
+}, [width, height, adapterType, resourceMode, updateUI]);
 ```
 
 ## React UI 동기화 흐름

@@ -49,14 +49,13 @@ v3에서 핵심은 **"프레임워크가 규칙을 강제한다"**는 것이다.
 │  └─ AssetFactorySubsystem (에셋 로딩)                            │
 ├─────────────────────────────────────────────────────────────────┤
 │              Layer 1: Concrete Adapters (구현)                   │
-│  CanvasAdapter                                                  │
-│  ├─ CanvasInput      (키보드/포인터 → 액션 매핑)                  │
-│  ├─ CanvasPhysics    (AABB 충돌 감지)                            │
-│  ├─ CanvasRenderer   (DrawCommand → Canvas 2D)                  │
-│  ├─ CanvasAudio      (Web Audio API)                            │
-│  └─ CanvasAssetFactory (fetch → ImageBitmap/AudioBuffer)        │
-│                                                                 │
-│  [미래] PhaserAdapter, PixiAdapter, ...                          │
+│  CanvasAdapter       (Canvas 2D — 기본, 의존성 없음)              │
+│  PixiAdapter         (PixiJS v8 — WebGL/WebGPU 렌더링)           │
+│  ThreeAdapter        (Three.js — 3D 엔진 기반 2D 렌더링)         │
+│  PhaserAdapter       (Phaser 3 — 게임 프레임워크 래핑)            │
+│  ├─ {Engine}Input, {Engine}Physics, {Engine}Audio               │
+│  ├─ {Engine}Renderer, {Engine}AssetFactory                      │
+│  └─ 각 어댑터는 동일한 EngineAdapterInterface 구현               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -68,7 +67,7 @@ v3에서 핵심은 **"프레임워크가 규칙을 강제한다"**는 것이다.
 | **Game Loop** | 프레임 스케줄링, 고정 타임스텝, 씬 관리 | 아래로만 |
 | **GameObject+Trait** | 게임 엔티티 정의, 행위 조합, 충돌 처리 | 아래로만 |
 | **Adapter Interface** | 플랫폼 추상화 (입력, 물리, 오디오, 에셋) | 인터페이스만 |
-| **Concrete Adapter** | 실제 플랫폼 구현 (Canvas 2D, Web Audio) | 없음 |
+| **Concrete Adapter** | 실제 플랫폼 구현 (Canvas 2D, PixiJS, Three.js, Phaser 3) | 없음 |
 
 각 계층의 상세 내용은 해당 문서를 참조:
 

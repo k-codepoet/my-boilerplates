@@ -80,15 +80,25 @@ src/
 │   ├── EventBus.ts         # 이벤트 시스템
 │   └── types.ts            # 모든 타입/인터페이스 정의
 │
-├── adapters/               # 어댑터 추상화
+├── adapters/               # 어댑터 추상화 (4종 구현)
 │   ├── EngineAdapter.ts    # 어댑터 기반 (미사용, interface가 types.ts에 정의됨)
-│   └── canvas/             # Canvas 2D 어댑터 (현재 유일한 구현체)
-│       ├── CanvasAdapter.ts      # 어댑터 메인
-│       ├── CanvasInput.ts        # 키보드 입력 서브시스템
-│       ├── CanvasPhysics.ts      # AABB 물리 서브시스템
-│       ├── CanvasAudio.ts        # Web Audio API 서브시스템
-│       ├── CanvasAssetFactory.ts # 에셋 로딩 팩토리
-│       └── CanvasRenderer.ts     # Canvas 2D 렌더러
+│   ├── index.ts            # 배럴 export
+│   ├── canvas/             # Canvas 2D 어댑터 (기본, 의존성 없음)
+│   │   ├── CanvasAdapter.ts      # 어댑터 메인
+│   │   ├── CanvasInput.ts        # 키보드 입력 서브시스템
+│   │   ├── CanvasPhysics.ts      # AABB 물리 서브시스템
+│   │   ├── CanvasAudio.ts        # Web Audio API 서브시스템
+│   │   ├── CanvasAssetFactory.ts # 에셋 로딩 팩토리
+│   │   └── CanvasRenderer.ts     # Canvas 2D 렌더러
+│   ├── pixi/               # PixiJS v8 어댑터 (WebGL/WebGPU)
+│   │   ├── PixiAdapter.ts        # 어댑터 메인 (비동기 초기화)
+│   │   └── PixiRenderer.ts       # PixiJS 렌더러
+│   ├── three/              # Three.js 어댑터 (OrthographicCamera 2D)
+│   │   ├── ThreeAdapter.ts       # 어댑터 메인
+│   │   └── ThreeRenderer.ts      # Three.js 렌더러
+│   └── phaser/             # Phaser 3 어댑터 (게임 프레임워크 래핑)
+│       ├── PhaserAdapter.ts      # 어댑터 메인 (비동기 Scene 초기화)
+│       └── PhaserRenderer.ts     # Phaser 렌더러
 │
 ├── traits/                 # 재사용 가능한 행동 컴포넌트
 │   ├── Movable.ts          # 속도/가속/마찰 기반 이동
@@ -120,17 +130,22 @@ src/
 │
 ├── templates/              # 게임 템플릿
 │   └── platformer/         # 플랫포머 데모
-│       ├── PlatformerGame.ts   # 게임 팩토리 함수
+│       ├── PlatformerGame.ts   # 게임 팩토리 함수 (어댑터 선택 + 리소스 파이프라인)
 │       ├── game.json           # 게임 정의 데이터
 │       ├── scenes/             # 씬 구현
 │       │   ├── TitleScene.ts
 │       │   ├── PlayScene.ts
 │       │   └── GameOverScene.ts
-│       └── objects/            # 오브젝트 팩토리
-│           ├── Player.ts
-│           ├── Platform.ts
-│           ├── Coin.ts
-│           └── Enemy.ts
+│       ├── objects/            # 오브젝트 팩토리
+│       │   ├── Player.ts
+│       │   ├── Platform.ts
+│       │   ├── Coin.ts
+│       │   └── Enemy.ts
+│       └── sprites/            # 스프라이트 리소스 파이프라인
+│           ├── SpriteFactory.ts           # 프로그래매틱 스프라이트 (OffscreenCanvas → ImageBitmap)
+│           ├── registerProgrammaticAssets.ts # 프로그래매틱 에셋을 어댑터에 등록
+│           ├── assetDescriptors.ts        # 파일 기반 에셋 디스크립터
+│           └── exportSpritePNGs.ts        # PNG 내보내기 유틸리티 (개발용)
 │
 └── ui/                     # React UI 레이어
     ├── GameCanvas.tsx       # 게임 캔버스 + UI 통합 컴포넌트
@@ -452,7 +467,7 @@ export { MyTrait } from "./MyTrait";
 
 ## 5. 새 어댑터 추가하기
 
-어댑터는 엔진과 렌더링/물리 백엔드를 연결하는 추상화 레이어다. 현재 Canvas 2D 어댑터만 구현되어 있다.
+어댑터는 엔진과 렌더링/물리 백엔드를 연결하는 추상화 레이어다. 현재 4개 어댑터가 구현되어 있다: Canvas 2D, PixiJS v8, Three.js, Phaser 3. 상세 내용은 [04-adapter-pattern.md](04-adapter-pattern.md) 참조.
 
 ### 5.1. 디렉토리 생성
 
@@ -601,40 +616,48 @@ update(dt: number, collisions: Collision[], input?: InputState): void {
 | 기능 | 상태 | 비고 |
 |------|------|------|
 | Canvas 2D 어댑터 | 완료 | 렌더링, AABB 물리, Web Audio, 키보드 입력 |
+| PixiJS v8 어댑터 | 완료 | WebGL/WebGPU 렌더링, 서브시스템은 Canvas 재사용 |
+| Three.js 어댑터 | 완료 | OrthographicCamera 기반 2D 렌더링 |
+| Phaser 3 어댑터 | 완료 | Phaser Game 인스턴스 래핑, 비동기 Scene 초기화 |
 | 8개 기본 Trait | 완료 | Movable, Jumpable, Damageable, Scorer, Timer, Tappable, Collidable, Animated |
-| 플랫포머 템플릿 | 완료 | 3개 씬 (Title/Play/GameOver), 4종 오브젝트 |
+| 플랫포머 템플릿 | 완료 | 3개 씬, 4종 오브젝트, AABB 충돌, 스톰프, 넉백 |
+| 프로그래매틱 스프라이트 | 완료 | SpriteFactory (OffscreenCanvas → ImageBitmap), 런타임 생성 |
+| Resource Pipeline 토글 | 완료 | "programmatic" / "file" 런타임 전환, localStorage 지속 |
 | React Router 통합 | 완료 | SPA 배포용 (`/play` 라우트) |
 | 메모리 최적화 | 완료 | TransformBuffer (Float32Array), ObjectPool, EventPool |
-| 렌더 파이프라인 | 완료 | DrawCommand, DirtyTracker, Projector |
+| 렌더 파이프라인 | 완료 | DrawCommand, 좌상단→중심점 좌표 변환, 무적 깜빡임/데미지 플래시/스톰프 파티클 |
 | game.json 스키마 | 완료 | 타입 정의 존재 (`GameDefinitionData`) |
-| Phaser 어댑터 | 미구현 | `stack.adapter: "phaser"` 선언만 존재 |
-| PixiJS 어댑터 | 미구현 | 설계만 존재 |
+| 어댑터 런타임 전환 | 완료 | UI 토글로 4개 어댑터 간 전환, localStorage 지속 |
+| 파일 기반 에셋 | 부분 | 디스크립터/폴백 구현됨, 실제 PNG 파일은 미생성 (exportSpritePNGs 유틸리티 존재) |
 | 추가 템플릿 | 미구현 | 클리커, 퍼즐 등 |
 | 멀티플레이 | 미구현 | 설계 문서만 존재 |
-| Resource Pipeline 전체 모드 | 미구현 | `stack.resourcePipeline: "lite"` 모드만 동작 |
 | CI/CD | 미포함 | CLAUDE.md: "안정화 후 추가" |
 
 ---
 
 ## 8. 로드맵
 
-### Phase 1: 엔진 안정화 (현재)
+### Phase 1: 엔진 안정화 — 완료 ✓
 
-- 기존 코드 버그 수정 및 안정화
+- ~~기존 코드 버그 수정 및 안정화~~ (더블폴링, 좌표 변환, 점프 물리 수정)
+- 추가 게임 템플릿 (클리커, 퍼즐 등) — 미시작
+- CI 파이프라인 추가 (degit 시뮬레이션 빌드 검증) — 미시작
+- 테스트 프레임워크 도입 — 미시작
+
+### Phase 2: 어댑터 확장 — 완료 ✓
+
+- ~~PixiJS v8 어댑터 (WebGL/WebGPU 렌더링)~~ — 완료
+- ~~Three.js 어댑터 (OrthographicCamera 2D)~~ — 완료
+- ~~Phaser 3 어댑터 (게임 프레임워크 래핑)~~ — 완료
+- ~~Resource Pipeline (programmatic + file 듀얼 모드)~~ — 완료
+- 파일 기반 PNG 에셋 생성 (exportSpritePNGs 실행) — 미완료
+
+### Phase 3: 고도화 (다음)
+
 - 추가 게임 템플릿 (클리커, 퍼즐)
-- CI 파이프라인 추가 (degit 시뮬레이션 빌드 검증)
+- CI 파이프라인 추가
 - 테스트 프레임워크 도입
-
-### Phase 2: 어댑터 확장
-
-- Phaser 어댑터 (물리 엔진 내장 활용)
-- PixiJS 어댑터 (WebGL 렌더링)
-- Resource Pipeline 고도화 (`full` 모드)
-
-### Phase 3: 멀티플레이
-
-- SyncAdapter 설계
-- 턴제 → 실시간 순으로 구현
+- 멀티플레이 (SyncAdapter 설계, 턴제 → 실시간)
 
 ---
 

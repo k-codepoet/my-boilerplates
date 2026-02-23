@@ -511,7 +511,7 @@ stack: {
 | **Physics** | canvas | full | arcade | 스프라이트 + 아케이드 물리 |
 | **Heavy** | phaser/pixi | full | matter | 고급 렌더링 + Matter.js 물리 |
 
-현재 구현된 것은 **Lite/Standard** 스택이며, Physics/Heavy는 어댑터 추가로 확장 가능하다.
+4개 어댑터(Canvas, PixiJS, Three.js, Phaser)가 모두 구현되어 런타임 전환이 가능하다. Resource Pipeline도 programmatic/file 듀얼 모드를 지원한다.
 
 ### 플랫포머 템플릿 구현 상세
 
@@ -535,24 +535,38 @@ templates/platformer/
 **PlatformerGame.ts — 초기화 흐름:**
 
 ```typescript
-export async function createPlatformerGame(canvas, width, height): Promise<Game> {
-  // 1. 어댑터 생성
-  const adapter = new CanvasAdapter();
+export async function createPlatformerGame(
+  canvas, width, height,
+  adapterType: "canvas" | "pixi" | "three" | "phaser" = "canvas",
+  resourceMode: "programmatic" | "file" = "programmatic",
+): Promise<Game> {
+  // 1. 어댑터 생성 (런타임 선택)
+  const adapter = await createAdapter(adapterType, canvas, width, height);
+
+  // 2. 리소스 파이프라인 (programmatic: OffscreenCanvas → ImageBitmap, file: PNG 로딩)
+  const registry = getAdapterRegistry(adapter);
+  if (resourceMode === "file") {
+    // 파일 기반 로딩 시도, 실패하면 프로그래매틱 폴백
+    try { await loadFileAssets(registry, adapter); }
+    catch { await registerProgrammaticAssets(registry); }
+  } else {
+    await registerProgrammaticAssets(registry);
+  }
+
   const game = new Game(adapter);
 
-  // 2. 씬 등록
+  // 3. 씬 등록 + 시작
   game.registerScene("title", new TitleScene());
   game.registerScene("play", new PlayScene());
   game.registerScene("gameover", new GameOverScene());
-
-  // 3. 시작 (어댑터 초기화 + 진입 씬으로 전환 + 루프 시작)
-  await game.start(gameDefinition.entryScene, canvas, width, height);
-
-  // 4. 입력 매핑 초기화
+  await game.start(gameDefinition.entryScene);
   game.adapter.input.init(gameDefinition.inputMap);
 
-  // 5. 렌더 파이프라인 배선 (onRender 콜백 설정)
-  game.getLoop().onRender = () => { /* DrawCommand 큐 생성 + 처리 */ };
+  // 4. 렌더 파이프라인 (좌표 변환 + 이펙트)
+  game.getLoop().onRender = () => {
+    // getRenderTransform()으로 좌상단→중심점 변환
+    // 무적 깜빡임, 데미지 플래시, 스톰프 파티클 포함
+  };
 
   return game;
 }
@@ -672,14 +686,23 @@ msw-engine/src/
 │   ├── Timer.ts               # 카운트다운/업 타이머
 │   └── index.ts               # 배럴 export
 │
-├── adapters/                  # 어댑터 구현
-│   └── canvas/
-│       ├── CanvasAdapter.ts   # 통합 어댑터
-│       ├── CanvasInput.ts     # 키보드/포인터 입력
-│       ├── CanvasPhysics.ts   # AABB 충돌 감지
-│       ├── CanvasRenderer.ts  # Canvas 2D 렌더링
-│       ├── CanvasAudio.ts     # Web Audio API
-│       └── CanvasAssetFactory.ts # 에셋 로딩
+├── adapters/                  # 어댑터 구현 (4종)
+│   ├── canvas/                # Canvas 2D (기본)
+│   │   ├── CanvasAdapter.ts   # 통합 어댑터
+│   │   ├── CanvasInput.ts     # 키보드/포인터 입력
+│   │   ├── CanvasPhysics.ts   # AABB 충돌 감지
+│   │   ├── CanvasRenderer.ts  # Canvas 2D 렌더링
+│   │   ├── CanvasAudio.ts     # Web Audio API
+│   │   └── CanvasAssetFactory.ts # 에셋 로딩
+│   ├── pixi/                  # PixiJS v8 (WebGL/WebGPU)
+│   │   ├── PixiAdapter.ts     # 비동기 초기화
+│   │   └── PixiRenderer.ts    # PixiJS 렌더러
+│   ├── three/                 # Three.js (OrthographicCamera 2D)
+│   │   ├── ThreeAdapter.ts
+│   │   └── ThreeRenderer.ts
+│   └── phaser/                # Phaser 3 (게임 프레임워크 래핑)
+│       ├── PhaserAdapter.ts   # 비동기 Scene 초기화
+│       └── PhaserRenderer.ts
 │
 ├── render/                    # 렌더링 유틸
 │   └── DrawCommand.ts         # DrawCommand 팩토리 + CommandPool
@@ -696,15 +719,20 @@ msw-engine/src/
 │
 └── templates/                 # 게임 템플릿
     └── platformer/
-        ├── PlatformerGame.ts  # 게임 초기화 + 렌더 배선
+        ├── PlatformerGame.ts  # 게임 초기화 + 어댑터 선택 + 리소스 파이프라인
         ├── game.json          # 게임 정의
         ├── scenes/
         │   ├── TitleScene.ts
         │   ├── PlayScene.ts
         │   └── GameOverScene.ts
-        └── objects/
-            ├── Player.ts
-            ├── Platform.ts
-            ├── Coin.ts
-            └── Enemy.ts
+        ├── objects/
+        │   ├── Player.ts
+        │   ├── Platform.ts
+        │   ├── Coin.ts
+        │   └── Enemy.ts
+        └── sprites/           # 스프라이트 리소스 파이프라인
+            ├── SpriteFactory.ts
+            ├── registerProgrammaticAssets.ts
+            ├── assetDescriptors.ts
+            └── exportSpritePNGs.ts
 ```

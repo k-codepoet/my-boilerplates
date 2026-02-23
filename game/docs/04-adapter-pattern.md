@@ -195,14 +195,99 @@ game.loop.onRender = () => {
   └─────────────────────────────────────────────────┘
 ```
 
+## 구현된 어댑터 목록
+
+현재 4개의 어댑터가 구현되어 있으며, 런타임에 UI 토글로 전환할 수 있다.
+
+### PixiAdapter — PixiJS v8
+
+> 파일: `msw-engine/src/adapters/pixi/`
+
+```
+PixiAdapter.ts          # 어댑터 메인 (비동기 초기화)
+PixiRenderer.ts         # PixiJS Application + Container + Sprite
+PixiInput.ts            # CanvasInput 재사용 (같은 키보드 이벤트)
+PixiPhysics.ts          # CanvasPhysics 재사용 (AABB)
+PixiAudio.ts            # CanvasAudio 재사용 (Web Audio)
+PixiAssetFactory.ts     # CanvasAssetFactory 재사용
+```
+
+**특징:**
+- WebGL/WebGPU 자동 선택 (PixiJS v8)
+- `Sprite.anchor.set(0.5)` — 중심점 기준 렌더링
+- 비동기 초기화: `adapter.waitForInit()` 필요
+- Container 기반 레이어 관리
+
+### ThreeAdapter — Three.js
+
+> 파일: `msw-engine/src/adapters/three/`
+
+```
+ThreeAdapter.ts         # 어댑터 메인
+ThreeRenderer.ts        # OrthographicCamera + Sprite/Mesh + WebGLRenderer
+ThreeInput.ts           # CanvasInput 재사용
+ThreePhysics.ts         # CanvasPhysics 재사용
+ThreeAudio.ts           # CanvasAudio 재사용
+ThreeAssetFactory.ts    # CanvasAssetFactory 재사용
+```
+
+**특징:**
+- OrthographicCamera로 2D 렌더링 (y-down 좌표계)
+- `CanvasTexture` + `NearestFilter`로 픽셀아트 보존
+- Sprite/Mesh 기반 렌더링, layer 값으로 z-position 결정
+
+### PhaserAdapter — Phaser 3
+
+> 파일: `msw-engine/src/adapters/phaser/`
+
+```
+PhaserAdapter.ts        # 어댑터 메인 (비동기 Scene 초기화)
+PhaserRenderer.ts       # Phaser.Game + Scene + Image
+PhaserInput.ts          # CanvasInput 재사용
+PhaserPhysics.ts        # CanvasPhysics 재사용
+PhaserAudio.ts          # CanvasAudio 재사용
+PhaserAssetFactory.ts   # CanvasAssetFactory 재사용
+```
+
+**특징:**
+- Phaser 3 Game 인스턴스 생성 → 내부 Scene에서 렌더링
+- 비동기 초기화: `adapter.waitForScene()` 필요
+- Image 오브젝트 기반, `setOrigin(0.5)` 중심점 렌더링
+
+### 어댑터 간 공유 구조
+
+4개 어댑터 모두 동일한 서브시스템 인터페이스를 구현하되, 렌더러만 각 엔진 고유 구현이다. 입력/물리/오디오/에셋 로딩은 Canvas 어댑터의 구현을 재사용한다:
+
+```
+                    CanvasAdapter    PixiAdapter    ThreeAdapter    PhaserAdapter
+  Renderer          Canvas 2D        PixiJS v8      Three.js        Phaser 3
+  Input             CanvasInput      CanvasInput    CanvasInput     CanvasInput
+  Physics           CanvasPhysics    CanvasPhysics  CanvasPhysics   CanvasPhysics
+  Audio             CanvasAudio      CanvasAudio    CanvasAudio     CanvasAudio
+  AssetFactory      CanvasAssetF.    CanvasAssetF.  CanvasAssetF.   CanvasAssetF.
+```
+
+### 좌표계 변환
+
+모든 어댑터는 **중심점 기준(center-origin)**으로 스프라이트를 렌더링한다. 게임플레이는 **좌상단 기준(top-left)**으로 좌표를 관리하므로, `PlatformerGame.ts`의 `getRenderTransform()`이 변환을 수행한다:
+
+```typescript
+// 비플랫폼 오브젝트: 좌상단 → 중심점
+{ x: tx + spriteW / 2, y: ty + spriteH / 2 }
+
+// 플랫폼: 좌상단 + 실제 크기 → 중심점 + 스프라이트 스케일 배율
+{ x: tx + width / 2, y: ty + height / 2, scaleX: width / spriteW, scaleY: height / spriteH }
+```
+
 ## 새 어댑터 추가 가이드
 
 1. `EngineAdapterInterface`를 구현하는 새 클래스 생성
-2. 4개 서브시스템 인터페이스 각각 구현:
-   - `InputSubsystem` — 해당 엔진의 입력 시스템 래핑
-   - `PhysicsSubsystem` — 해당 엔진의 물리 시스템 래핑
-   - `AudioSubsystem` — 해당 엔진의 오디오 시스템 래핑
-   - `AssetFactorySubsystem` — 해당 엔진의 에셋 로더 래핑
-3. `requestFrame` / `cancelFrame` 구현
-4. `processDrawQueue(commands: DrawCommand[])` 구현 — 각 DrawCommand를 해당 엔진의 렌더링 명령으로 변환
-5. 게임 코드는 변경 불필요 — `new PhaserAdapter()` 대신 `new CanvasAdapter()`만 교체
+2. 렌더러 구현 (중심점 기준 스프라이트 렌더링)
+3. 서브시스템은 Canvas 구현을 재사용하거나 해당 엔진 네이티브로 구현:
+   - `InputSubsystem` — 입력 폴링
+   - `PhysicsSubsystem` — 충돌 감지
+   - `AudioSubsystem` — 사운드 재생
+   - `AssetFactorySubsystem` — 에셋 로딩
+4. `processDrawQueue(commands: DrawCommand[])` 구현 — DrawCommand를 해당 엔진의 렌더링 명령으로 변환
+5. `getAssetRegistry(): Map<string, EngineAsset>` 메서드 구현 (프로그래매틱 에셋 등록에 사용)
+6. `PlatformerGame.ts`의 `createAdapter()`에 새 어댑터 추가

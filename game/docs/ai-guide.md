@@ -63,10 +63,12 @@ ui/         ← GameCanvas, HUD, DebugOverlay (React 컴포넌트)
 
 | 스택 | adapter | physics | resourcePipeline | 적합 장르 | 핵심 Trait |
 |------|---------|---------|------------------|----------|-----------|
-| **Lite** | `canvas` | `null` | `lite` | 클리커, 퀴즈 | Tappable, Timer, Scorer |
-| **Standard** | `canvas` | `null` | `lite` | 퍼즐, 보드, RPG | 커스텀 Trait 위주 |
-| **Physics** | `canvas` | `arcade` | `lite` | 플랫포머, 슈팅 | Movable, Jumpable, Damageable, Collidable |
-| **Heavy** | `phaser`/`pixi` | `arcade` | `full` | 뱀서라이크, TD | Movable, Damageable, Scorer, Timer |
+| **Lite** | `canvas` | `null` | `programmatic` | 클리커, 퀴즈 | Tappable, Timer, Scorer |
+| **Standard** | `canvas` | `null` | `programmatic` | 퍼즐, 보드, RPG | 커스텀 Trait 위주 |
+| **Physics** | `canvas`/`pixi`/`three` | `null` | `programmatic` | 플랫포머, 슈팅 | Movable, Jumpable, Damageable, Collidable |
+| **Heavy** | `phaser`/`pixi` | `arcade` | `file` | 뱀서라이크, TD | Movable, Damageable, Scorer, Timer |
+
+> **참고**: 4개 어댑터(Canvas 2D, PixiJS v8, Three.js, Phaser 3)가 모두 구현되어 있으며, 런타임에 UI 토글로 전환 가능하다. 리소스 모드도 `"programmatic"` (OffscreenCanvas로 런타임 생성) / `"file"` (PNG 파일 로딩) 전환을 지원한다.
 
 ### Step 3: game.json 작성
 
@@ -210,7 +212,7 @@ interface GameDefinitionData {
 
 ### Step 4: {Genre}Game.ts 작성
 
-`{Genre}Game.ts`는 게임의 진입점이다. `createGame` 팩토리 함수를 export한다.
+`{Genre}Game.ts`는 게임의 진입점이다. `createGame` 팩토리 함수를 export한다. 어댑터 타입과 리소스 모드를 파라미터로 받아 런타임 전환을 지원한다.
 
 #### 패턴
 
@@ -324,7 +326,9 @@ export async function create{Genre}Game(
 
 1. **`spawnedIds`**: 이미 렌더러에 등록된 오브젝트 추적용. 새 오브젝트는 `SPAWN`, 기존 오브젝트는 `MOVE`로 처리한다.
 2. **DrawCommand 순서**: `CLEAR` → `CAMERA` → 각 오브젝트(`SPAWN`/`MOVE` + `FLIP`) → `DESTROY`(삭제된 것).
-3. **`processDrawQueue`**: 누적된 커맨드를 adapter에 전달하면 실제 Canvas에 그려진다.
+3. **좌표 변환 필수**: 모든 4개 렌더러가 중심점 기준이므로 `getRenderTransform()`으로 좌상단→중심점 변환이 필요하다. 플랫폼은 추가로 실제크기→스프라이트 스케일 변환도 수행한다.
+4. **`processDrawQueue`**: 누적된 커맨드를 adapter에 전달하면 실제 렌더링이 수행된다.
+5. **리소스 파이프라인**: `registerProgrammaticAssets()`로 SpriteFactory의 ImageBitmap을 어댑터 레지스트리에 등록한다. 파일 기반은 `assetDescriptors.ts` + `AssetRegistry`를 사용하며, 실패 시 프로그래매틱으로 폴백한다.
 
 ### Step 5: Scene 구현
 
