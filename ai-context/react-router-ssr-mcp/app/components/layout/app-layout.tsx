@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Package, ArrowLeftRight, Upload } from "lucide-react";
+import { LayoutDashboard, Package, ArrowLeftRight, Upload, MessageSquare } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
   { to: "/items", icon: Package, label: "Items" },
   { to: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
   { to: "/import", icon: Upload, label: "Import" },
+  { to: "/chat", icon: MessageSquare, label: "Chat" },
 ];
 
 export default function AppLayout() {

@@ -2,7 +2,7 @@
  * Shared query functions used by BOTH web routes AND MCP server.
  * Replace these with your own domain queries.
  */
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "~/db";
 import {
   portfolios,
@@ -10,6 +10,8 @@ import {
   holdings,
   transactions,
   marketPrices,
+  chatSessions,
+  chatMessages,
 } from "~/db/schema";
 
 // ── Portfolios ──────────────────────────────────────────────
@@ -97,6 +99,60 @@ export function getLatestPrice(assetId: string) {
     .orderBy(marketPrices.recordedAt)
     .limit(1)
     .get();
+}
+
+// ── Chat Sessions ──────────────────────────────────────────
+
+export function listChatSessions() {
+  return db
+    .select()
+    .from(chatSessions)
+    .orderBy(desc(chatSessions.updatedAt))
+    .all();
+}
+
+export function getChatSessionWithMessages(sessionId: string) {
+  const session = db
+    .select()
+    .from(chatSessions)
+    .where(eq(chatSessions.id, sessionId))
+    .get();
+  if (!session) return null;
+
+  const messages = db
+    .select()
+    .from(chatMessages)
+    .where(eq(chatMessages.sessionId, sessionId))
+    .orderBy(chatMessages.createdAt)
+    .all();
+
+  return { ...session, messages };
+}
+
+export function createChatSession(title: string) {
+  const id = crypto.randomUUID();
+  const now = new Date();
+  db.insert(chatSessions)
+    .values({ id, title, createdAt: now, updatedAt: now })
+    .run();
+  return id;
+}
+
+export function addChatMessage(
+  sessionId: string,
+  role: string,
+  content: string
+) {
+  const id = crypto.randomUUID();
+  const now = new Date();
+  db.insert(chatMessages)
+    .values({ id, sessionId, role, content, createdAt: now })
+    .run();
+  db.update(chatSessions)
+    .set({ updatedAt: now })
+    .where(eq(chatSessions.id, sessionId))
+    .run();
+  return id;
 }
 
 // ── Summary (for MCP) ───────────────────────────────────────

@@ -16,6 +16,8 @@ sqlite.pragma("foreign_keys = ON");
 const db = drizzle(sqlite, { schema });
 
 // Clear existing data (order matters due to foreign keys)
+db.delete(schema.chatMessages).run();
+db.delete(schema.chatSessions).run();
 db.delete(schema.marketPrices).run();
 db.delete(schema.transactions).run();
 db.delete(schema.holdings).run();
@@ -145,6 +147,45 @@ db.insert(schema.transactions)
       currency: "USD",
       executedAt: now,
       createdAt: now,
+    },
+  ])
+  .run();
+
+// Chat Sessions
+db.insert(schema.chatSessions)
+  .values([
+    {
+      id: "chat-1",
+      title: "Portfolio Review",
+      createdAt: now,
+      updatedAt: now,
+    },
+  ])
+  .run();
+
+db.insert(schema.chatMessages)
+  .values([
+    {
+      id: "msg-1",
+      sessionId: "chat-1",
+      role: "user",
+      content: "Can you summarize my main portfolio?",
+      createdAt: new Date(now.getTime()),
+    },
+    {
+      id: "msg-2",
+      sessionId: "chat-1",
+      role: "assistant",
+      content:
+        "Your Main Portfolio has 3 holdings: Samsung Electronics (100 shares), Apple (10 shares), and Vanguard S&P 500 ETF (20 shares). Total cost basis is approximately 7,209,000 KRW.",
+      createdAt: new Date(now.getTime() + 1000),
+    },
+    {
+      id: "msg-3",
+      sessionId: "chat-1",
+      role: "user",
+      content: "Is the allocation balanced?",
+      createdAt: new Date(now.getTime() + 2000),
     },
   ])
   .run();

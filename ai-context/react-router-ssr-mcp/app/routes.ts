@@ -12,5 +12,7 @@ export default [
     route("items/:id", "routes/items.$id.tsx"),
     route("transactions", "routes/transactions.tsx"),
     route("import", "routes/import.tsx"),
+    route("chat", "routes/chat.tsx"),
+    route("chat/:id", "routes/chat.$id.tsx"),
   ]),
 ] satisfies RouteConfig;

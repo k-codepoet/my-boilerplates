@@ -63,6 +63,28 @@ export const transactions = sqliteTable("transactions", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 
+// ============================================================
+// Chat Sessions — stores conversation history for both
+// web UI and MCP (Claude Code CLI) interactions.
+// ============================================================
+
+export const chatSessions = sqliteTable("chat_sessions", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
+export const chatMessages = sqliteTable("chat_messages", {
+  id: text("id").primaryKey(),
+  sessionId: text("session_id")
+    .notNull()
+    .references(() => chatSessions.id),
+  role: text("role").notNull(), // "user" | "assistant"
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
 export const marketPrices = sqliteTable("market_prices", {
   id: text("id").primaryKey(),
   assetId: text("asset_id")
