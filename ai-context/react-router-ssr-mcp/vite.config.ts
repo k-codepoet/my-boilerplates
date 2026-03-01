@@ -9,6 +9,8 @@ export default defineConfig({
   },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   server: {
+    host: true,
+    allowedHosts: true,
     warmup: {
       clientFiles: ["./app/root.tsx"],
     },

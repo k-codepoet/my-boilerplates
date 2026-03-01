@@ -1,9 +1,12 @@
 /**
  * Seed script: populates the database with example data.
  * Run with: npx tsx app/db/seed.ts
+ *
+ * Safe to run multiple times — existing data is cleared first.
  */
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
+import { sql } from "drizzle-orm";
 import * as schema from "./schema";
 
 const dbPath = process.env.DATABASE_PATH || "./data/app.db";
@@ -11,6 +14,13 @@ const sqlite = new Database(dbPath);
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 const db = drizzle(sqlite, { schema });
+
+// Clear existing data (order matters due to foreign keys)
+db.delete(schema.marketPrices).run();
+db.delete(schema.transactions).run();
+db.delete(schema.holdings).run();
+db.delete(schema.assets).run();
+db.delete(schema.portfolios).run();
 
 const now = new Date();
 
@@ -139,5 +149,5 @@ db.insert(schema.transactions)
   ])
   .run();
 
-console.log("Seed data inserted successfully.");
+console.log("Seed data inserted successfully. (existing data was cleared first)");
 sqlite.close();
