@@ -4,7 +4,7 @@
 
 AI Context Management App — Web UI for data CRUD, Claude Code CLI for chat/analysis via MCP.
 
-**Architecture:** Web app manages domain data (SQLite). MCP server reads same DB and exposes tools/resources/prompts to Claude Code CLI. No chat UI in web app.
+**Architecture:** Web app manages domain data + chat sessions (SQLite). MCP server reads/writes same DB and exposes tools/resources/prompts to Claude Code CLI. Web app includes chat UI.
 
 ## Tech Stack
 
@@ -30,7 +30,9 @@ npx tsx app/db/seed.ts  # Seed example data
 
 The `.mcp.json` at project root auto-configures Claude Code CLI.
 
-**Tools:** list-portfolios, get-portfolio, portfolio-summary, list-assets, get-asset, list-transactions, rebalance-analysis, overview
+**Tools (read):** list-portfolios, get-portfolio, portfolio-summary, list-assets, get-asset, list-transactions, rebalance-analysis, overview, list-chat-sessions, get-chat-session
+
+**Tools (write):** create-chat-session, add-chat-message
 
 **Prompts:** review-state, rebalance-portfolio
 

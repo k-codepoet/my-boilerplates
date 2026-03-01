@@ -24,11 +24,15 @@ AI Context App이 필요하다
 ┌──────────────────────┐     ┌────────────────────┐
 │  Web App (SSR)       │     │  Claude Code CLI    │
 │  컨텍스트 관리 UI    │     │  자연어 대화/분석   │
-│  (채팅 UI 없음)      │     │                    │
-│  SQLite (Drizzle)   ◄├─────┤  MCP Server        │
-└──────────────────────┘  DB │  (stdio transport) │
+│  채팅 UI             │     │                    │
+│  SQLite (Drizzle)   ◄├─────┤► MCP Server        │
+└──────────────────────┘  DB │  (stdio, R/W)      │
                              └────────────────────┘
 ```
+
+- 웹 앱과 MCP 서버가 동일 SQLite DB를 공유 (WAL 모드)
+- 웹에서 입력한 데이터를 MCP로 조회하고, MCP로 기록한 데이터를 웹에서 확인
+- 상세 데이터 흐름: [docs/data-flow.md](docs/data-flow.md)
 
 ## 공통 기술 스택
 
@@ -63,6 +67,7 @@ claude      # Claude Code CLI (MCP 자동 연결)
 
 ## 다음 작업
 
+- [x] Chat Sessions — 웹 채팅 UI + MCP 읽기/쓰기 도구
 - [ ] Cloudflare Workers 변형 (`react-router-ssr-mcp-cloudflare`, D1 사용)
 - [ ] TanStack Start 변형 (`tanstack-start-ssr-mcp`)
 - [ ] Import/Export 기능 완성 (CSV 파싱, 파일 다운로드)

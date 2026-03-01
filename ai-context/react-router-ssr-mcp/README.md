@@ -1,22 +1,22 @@
 # react-router-ssr-mcp
 
-AI Context Management boilerplate — Web UI for CRUD + MCP server for Claude Code CLI integration.
+AI Context Management boilerplate — Web UI for CRUD & chat + MCP server for Claude Code CLI integration.
 
 ## Architecture
 
 ```
-┌──────────────────────┐     ┌────────────────────┐
-│  Web App (SSR)       │     │  Claude Code CLI    │
-│  Data CRUD UI        │     │  Chat / Analysis    │
-│  port 3000           │     │                    │
-│  SQLite (Drizzle)   ◄├─────┤  MCP Server        │
-└──────────────────────┘  DB │  (stdio transport) │
-                             └────────────────────┘
+┌───────────────────────────┐     ┌────────────────────┐
+│  Web App (SSR)            │     │  Claude Code CLI    │
+│  Data CRUD + Chat UI      │     │  Chat / Analysis    │
+│  port 3000                │     │                    │
+│  SQLite (Drizzle, WAL)   ◄├─────┤► MCP Server        │
+└───────────────────────────┘  DB │  (stdio, R/W)      │
+                                  └────────────────────┘
 ```
 
-- **Web App**: React Router v7 SSR — manage domain data
-- **MCP Server**: Read same SQLite DB — expose tools/resources/prompts to Claude Code
-- **No chat UI** — all conversations happen in Claude Code CLI
+- **Web App**: React Router v7 SSR — manage domain data + chat sessions
+- **MCP Server**: Read/write same SQLite DB — expose tools/resources/prompts to Claude Code
+- **Shared DB**: 웹에서 입력한 데이터를 MCP로 조회, MCP로 기록한 데이터를 웹에서 확인
 
 ## Quick Start
 
@@ -54,7 +54,9 @@ Files marked with arrows are the ones to replace for your domain:
 app/db/schema.ts        ← Your entities
 app/lib/queries.ts      ← Your queries (shared: routes + MCP)
 app/routes/             ← Your UI pages
+app/routes/chat*.tsx    ← Chat UI (reuse or replace)
 mcp/tools/              ← Your MCP tools
+mcp/tools/chat-tools.ts ← Chat tools (reuse or replace)
 mcp/prompts/            ← Your analysis prompts
 CLAUDE.md               ← Your project instructions
 ```

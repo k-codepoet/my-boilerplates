@@ -10,12 +10,12 @@ AI Context 보일러플레이트는 "웹 UI로 데이터 관리 + Claude Code CL
 
 ```
 사용자
-  ├── Web UI → 데이터 입력/관리 (CRUD)
+  ├── Web UI → 데이터 입력/관리 (CRUD) + 채팅
   └── Claude Code CLI → 대화/분석 (MCP를 통해 같은 DB 접근)
 ```
 
-- **Web App**: 도메인 데이터의 입력/조회/수정/삭제
-- **MCP Server**: Claude Code가 데이터를 읽어서 분석/대화에 활용
+- **Web App**: 도메인 데이터의 입력/조회/수정/삭제 + 채팅 UI
+- **MCP Server**: Claude Code가 데이터를 읽고 쓰기 (대화 기록 포함)
 - **SQLite**: 두 프로세스가 같은 파일을 공유 (WAL 모드로 동시 읽기 안전)
 
 ### MCP Integration
@@ -35,9 +35,26 @@ AI Context 보일러플레이트는 "웹 UI로 데이터 관리 + Claude Code CL
 ```
 
 MCP 서버는 3가지 기능을 제공:
-- **Tools**: 데이터 조회/분석 함수 (Claude가 호출)
+- **Tools**: 데이터 조회 + 쓰기 함수 (Claude가 호출) — 읽기 8개, 쓰기 4개
 - **Resources**: 데이터 스냅샷 (Claude가 읽기)
 - **Prompts**: 분석 프롬프트 템플릿
+
+### MCP Tools
+
+| 도구 | 타입 | 설명 |
+|------|------|------|
+| `list-portfolios` | 읽기 | 포트폴리오 목록 |
+| `get-portfolio` | 읽기 | 포트폴리오 + 보유 자산 상세 |
+| `portfolio-summary` | 읽기 | 배분 분석 요약 |
+| `list-assets` | 읽기 | 전체 자산 목록 |
+| `get-asset` | 읽기 | 자산 상세 |
+| `list-transactions` | 읽기 | 거래 내역 |
+| `rebalance-analysis` | 읽기 | 리밸런싱 분석 |
+| `overview` | 읽기 | 전체 데이터 개요 |
+| `list-chat-sessions` | 읽기 | 대화 세션 목록 |
+| `get-chat-session` | 읽기 | 세션 + 메시지 상세 |
+| `create-chat-session` | 쓰기 | 새 세션 생성 |
+| `add-chat-message` | 쓰기 | 세션에 메시지 추가 |
 
 ## Customization Flow
 
@@ -70,3 +87,4 @@ Docker multi-stage 빌드 → 홈서버 Traefik → Cloudflare Tunnel:
 |------|------|
 | [../README.md](../README.md) | 카테고리 개요, 선택 가이드 |
 | [react-router-ssr-mcp](../react-router-ssr-mcp/README.md) | 보일러플레이트 상세 |
+| [data-flow.md](data-flow.md) | 서비스 구조 + 데이터 흐름 상세 |
