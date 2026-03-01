@@ -102,6 +102,14 @@ validate:cli-ts:
   variables:
     APP_PATH: cli/ink-ts
 
+# --- AI Context boilerplates (Node.js) ---
+validate:ai-context:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - ai-context/react-router-ssr-mcp
+
 # --- Native App boilerplates (frontend only, Tauri build는 Rust 필요) ---
 validate:native-app:
   extends: .degit-node
@@ -221,6 +229,7 @@ docker:build:
           - web/react-router-ssr
           - web/tanstack-start-ssr
           - bot/slack-processor-python
+          - ai-context/react-router-ssr-mcp
   script:
     - echo "=== Docker build ${APP_PATH} ==="
     - cd ${APP_PATH}

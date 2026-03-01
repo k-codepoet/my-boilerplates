@@ -40,6 +40,10 @@ game/                             # 게임 엔진 (2종)
 └── msw-react-router-spa/         # MSW + React Router SPA
 → 상세: game/README.md · game/docs/
 
+ai-context/                       # AI 컨텍스트 관리 (1종)
+└── react-router-ssr-mcp/         # SSR + SQLite + MCP Server, Docker
+→ 상세: ai-context/README.md · ai-context/docs/index.md
+
 lib/                              # 공유 패키지 (placeholder)
 ```
 
@@ -84,6 +88,9 @@ uv venv && source .venv/bin/activate && uv pip install -e . && python -m src.mai
 
 # Game
 pnpm dev | build | typecheck
+
+# AI Context (React Router + MCP)
+pnpm dev | build | typecheck | mcp:dev | db:push | db:studio
 ```
 
 ## Technology Stack
@@ -119,7 +126,7 @@ pnpm dev | build | typecheck
 
 | Category | Runtime | Version |
 |----------|---------|---------|
-| web/*, bot/*-ts, native-app/*, game/* | Node.js | 22 (.nvmrc) |
+| web/*, bot/*-ts, native-app/*, game/*, ai-context/* | Node.js | 22 (.nvmrc) |
 | bot/*-python | Python | 3.11+ (.python-version) |
 | cli/ratatui-rs, native-app/* | Rust | stable (rustup) |
 | cli/bubbletea-go | Go | 1.23 (go.mod) |
@@ -160,3 +167,4 @@ No testing framework configured. Only `typecheck` (tsc --noEmit) available. Add 
 | **native-app/** | [native-app/README.md](native-app/README.md) | [index.md](native-app/docs/index.md) → 4개 문서 (Tauri개요, React Router, React, 비교) |
 | **bot/** | [bot/README.md](bot/README.md) | [index.md](bot/docs/index.md) → 5개 문서 (공통패턴, TS, CF, Python, 비교) |
 | **game/** | [game/README.md](game/README.md) | [index.md](game/docs/index.md) → 6개 아키텍처 + [contributing.md](game/docs/contributing.md) · [ai-guide.md](game/docs/ai-guide.md) |
+| **ai-context/** | [ai-context/README.md](ai-context/README.md) | [index.md](ai-context/docs/index.md) → 아키텍처, 커스텀 가이드 |

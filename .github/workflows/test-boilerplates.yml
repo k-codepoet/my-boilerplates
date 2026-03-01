@@ -33,6 +33,8 @@ jobs:
           # native-app (frontend only)
           - native-app/tauri-react
           - native-app/tauri-react-router
+          # ai-context
+          - ai-context/react-router-ssr-mcp
 
     steps:
       - uses: actions/checkout@v4
@@ -168,6 +170,7 @@ jobs:
           - web/react-router-ssr
           - web/tanstack-start-ssr
           - bot/slack-processor-python
+          - ai-context/react-router-ssr-mcp
 
     steps:
       - uses: actions/checkout@v4

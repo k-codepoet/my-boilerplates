@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "context-manager": {
+      "command": "npx",
+      "args": ["tsx", "./mcp/index.ts"],
+      "env": {
+        "DATABASE_PATH": "./data/app.db"
+      }
+    }
+  }
+}

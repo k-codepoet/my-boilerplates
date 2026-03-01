@@ -5,3 +5,4 @@ packages:
   - "lib/*"
   - "native-app/*"
   - "game/*"
+  - "ai-context/*"

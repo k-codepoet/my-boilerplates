@@ -12,6 +12,7 @@
 | **native-app/** | 2종 | ✅ 안정 | 자동 업데이트 검증, CI 추가 | [native-app/README.md](native-app/README.md#다음-작업) |
 | **bot/** | 3종 | ✅ 안정 | 프로세서 확장, 테스트 도입 | [bot/README.md](bot/README.md#다음-작업) |
 | **game/** | 2종 | 🔧 활발히 개발중 | 어댑터 렌더링 테스트, PNG 생성 | [game/README.md](game/README.md#다음-작업-next-steps) |
+| **ai-context/** | 1종 | ✅ 안정 | Cloudflare 변형, Import 기능 완성 | [ai-context/README.md](ai-context/README.md#다음-작업) |
 
 ## 카테고리별 현황
 
@@ -45,6 +46,12 @@
 
 **진행중/다음:** 어댑터 렌더링 테스트 → PNG 생성 → File-based 모드 검증 → SPA 동기화 → 추가 템플릿.
 상세: [game/README.md](game/README.md#다음-작업-next-steps)
+
+### ai-context/ — AI 컨텍스트 관리 (1종)
+
+**완료:** React Router SSR + MCP Server 보일러플레이트 (react-router-ssr-mcp). 웹 UI로 데이터 CRUD, Claude Code CLI + MCP로 AI 대화/분석. SQLite + Drizzle ORM, 자산관리 도메인 예시 포함.
+
+**다음:** [ai-context/README.md](ai-context/README.md#다음-작업)
 
 ---
 
