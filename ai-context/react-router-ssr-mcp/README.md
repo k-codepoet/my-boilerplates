@@ -77,3 +77,7 @@ docker run -p 3000:3000 -v ./data:/data my-context-app
 | `pnpm mcp:dev` | MCP server (stdio) |
 | `pnpm db:push` | Apply schema |
 | `pnpm db:studio` | DB browser |
+
+## Known Issues
+
+- [ ] Vite dev server remote access via Tailscale DNS (`host: true` + `allowedHosts: true` configured but still blocked) — investigate CORS/host validation for non-localhost access
