@@ -361,10 +361,9 @@ deploy:
       git clone --depth 1 https://oauth2:${DEVOPS_DEPLOY_TOKEN}@gitlab.home.codepoet.site/k-codepoet/my-devops.git
       cd my-devops
 
-      # Update image tag in compose
+      # Update image tag in compose (image: 라인만 매칭)
       FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
-      # 이미지 라인에서 태그만 교체 (이미지 경로는 유지)
-      sed -i '' "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${DEPLOY_VERSION}|" ${COMPOSE_PATH}
+      sed -i '' "s|image:.*${IMAGE_NAME}:.*|image: ${FULL_IMAGE}:${DEPLOY_VERSION}|" ${COMPOSE_PATH}
 
       echo "Updated compose:"
       grep "image:" ${COMPOSE_PATH}
