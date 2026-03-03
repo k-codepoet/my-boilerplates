@@ -269,6 +269,8 @@ build-image:
     - if: '$CI_COMMIT_TAG =~ /^[a-z0-9-]+\/v\d{4}\.\d+\.\d+$/'
   before_script:
     - export PATH="/opt/homebrew/bin:$PATH"
+    # nvm 로드 (Mac Mini 2 shell executor)
+    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
     # 태그에서 이름과 버전 추출
     - export DEPLOY_NAME="${CI_COMMIT_TAG%%/*}"
     - export DEPLOY_VERSION="${CI_COMMIT_TAG#*/}"
@@ -295,12 +297,12 @@ build-image:
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
   script:
     - export PATH="/opt/homebrew/bin:$PATH"
+    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
     - export DEPLOY_NAME="${CI_COMMIT_TAG%%/*}"
     - export DEPLOY_VERSION="${CI_COMMIT_TAG#*/}"
     - export APP_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $2}')
     - export IMAGE_NAME=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $3}')
     - |
-      export PATH="/opt/homebrew/bin:$PATH"
       FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
       echo "Building ${FULL_IMAGE}:${DEPLOY_VERSION}"
 
