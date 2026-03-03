@@ -36,6 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40">
+          {__APP_VERSION__} · {__BUILD_TIME__}
+        </footer>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -119,3 +122,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     </main>
   );
 }
+
+declare const __BUILD_TIME__: string;
+declare const __APP_VERSION__: string;

@@ -1,6 +1,9 @@
 # Build stage
 FROM node:22-alpine AS builder
 
+ARG APP_VERSION=dev
+ENV APP_VERSION=${APP_VERSION}
+
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app

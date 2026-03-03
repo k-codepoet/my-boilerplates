@@ -20,3 +20,4 @@
 #   webhook변수명   — GitLab CI Variable 이름 (Portainer webhook URL)
 
 sample-ssr: web/react-router-ssr-authentik sample-ssr services/codepoet-mac-mini-2/sample-ssr/docker-compose.yml WEBHOOK_SAMPLE_SSR
+msw-game: game/msw-react-router-spa msw-game services/codepoet-mac-mini-2/msw-game/docker-compose.yml WEBHOOK_MSW_GAME

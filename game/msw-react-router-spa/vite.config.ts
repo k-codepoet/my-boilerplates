@@ -4,6 +4,10 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  define: {
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __APP_VERSION__: JSON.stringify(process.env.APP_VERSION || "dev"),
+  },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   server: {
     warmup: {
