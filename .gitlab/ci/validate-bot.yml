@@ -1,0 +1,43 @@
+# Bot boilerplates 검증
+# TypeScript (slack-processor-ts, slack-processor-ts-cloudflare)
+# Python (slack-processor-python)
+
+validate:bot-ts:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - bot/slack-processor-ts
+          - bot/slack-processor-ts-cloudflare
+
+validate:bot-python:
+  stage: validate
+  image: python:3.12-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 10m
+  script:
+    - echo "=== Validating bot/slack-processor-python (degit simulation) ==="
+    - pip install uv
+    - mkdir -p /tmp/test-app
+    - cp -r bot/slack-processor-python/. /tmp/test-app/
+    - cd /tmp/test-app
+    - uv venv
+    - . .venv/bin/activate
+    - uv pip install -e ".[dev]" 2>/dev/null || uv pip install -e .
+    - |
+      if [ -f "pyproject.toml" ] && grep -q "ruff" pyproject.toml; then
+        uv pip install ruff
+        echo ">>> ruff check"
+        ruff check src/ || true
+      fi
+    - |
+      if [ -f "pyproject.toml" ] && grep -q "mypy" pyproject.toml; then
+        uv pip install mypy
+        echo ">>> mypy (non-blocking)"
+        mypy src/ || true
+      fi
+    - echo "=== bot/slack-processor-python OK ==="

@@ -1,0 +1,30 @@
+# Dockerfile 빌드 검증
+# Dockerfile이 있는 boilerplate만 대상
+
+docker:build:
+  stage: docker
+  image: docker:27
+  services:
+    - docker:27-dind
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 20m
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  parallel:
+    matrix:
+      - APP_PATH:
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/react-router-ssr-authentik
+          - web/tanstack-start-ssr
+          - bot/slack-processor-python
+          - ai-context/react-router-ssr-mcp
+  script:
+    - echo "=== Docker build ${APP_PATH} ==="
+    - cd ${APP_PATH}
+    - docker build -t test-boilerplate:ci .
+    - echo "=== Docker build ${APP_PATH} OK ==="

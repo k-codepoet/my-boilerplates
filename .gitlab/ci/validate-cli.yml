@@ -1,0 +1,58 @@
+# CLI boilerplates 검증
+# TypeScript (ink-ts), Rust (ratatui-rs), Go (bubbletea-go)
+
+validate:cli-ts:
+  extends: .degit-node
+  variables:
+    APP_PATH: cli/ink-ts
+
+validate:cli-rust:
+  stage: validate
+  image: rust:1.83-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 30m
+  cache:
+    key: cargo-ratatui
+    paths:
+      - .cargo-cache/registry/cache/
+      - .cargo-cache/registry/index/
+      - .cargo-cache/git/db/
+    policy: pull-push
+  variables:
+    CARGO_HOME: ${CI_PROJECT_DIR}/.cargo-cache
+  script:
+    - echo "=== Validating cli/ratatui-rs (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r cli/ratatui-rs/. /tmp/test-app/
+    - cd /tmp/test-app
+    - cargo check
+    - echo "=== cli/ratatui-rs OK ==="
+
+validate:cli-go:
+  stage: validate
+  image: golang:1.23-bookworm
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 10m
+  variables:
+    GOPATH: ${CI_PROJECT_DIR}/.go-cache
+  cache:
+    key: go-bubbletea
+    paths:
+      - .go-cache/pkg/mod/
+    policy: pull-push
+  script:
+    - echo "=== Validating cli/bubbletea-go (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r cli/bubbletea-go/. /tmp/test-app/
+    - cd /tmp/test-app
+    - go mod tidy
+    - go build ./cmd
+    - echo "=== cli/bubbletea-go OK ==="

@@ -1,0 +1,17 @@
+# Web boilerplates 검증
+# react-router-spa, react-router-ssr, react-router-ssr-authentik,
+# react-router-spa-cloudflare, react-router-ssr-cloudflare,
+# tanstack-router-spa, tanstack-start-ssr
+
+validate:web:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - web/react-router-spa
+          - web/react-router-ssr
+          - web/react-router-ssr-authentik
+          - web/react-router-spa-cloudflare
+          - web/react-router-ssr-cloudflare
+          - web/tanstack-router-spa
+          - web/tanstack-start-ssr

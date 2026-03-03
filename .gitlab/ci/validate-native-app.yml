@@ -1,0 +1,10 @@
+# Native App boilerplates 검증
+# frontend only — Tauri build는 Rust 필요하므로 프론트엔드만 검증
+
+validate:native-app:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - native-app/tauri-react
+          - native-app/tauri-react-router

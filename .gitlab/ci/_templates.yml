@@ -1,0 +1,44 @@
+# 공통 Rules & Templates
+#
+# 모든 CI 파일에서 extends로 참조
+
+.rules:main:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# Node.js boilerplate degit 시뮬레이션 템플릿
+# 독립 디렉토리에 복사 → pnpm install → build → typecheck
+.degit-node:
+  stage: validate
+  image: node:22
+  tags:
+    - docker
+    - linux
+    - amd64
+  extends: .rules:main
+  timeout: 15m
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+  script:
+    - echo "=== Validating ${APP_PATH} (degit simulation) ==="
+    - mkdir -p /tmp/test-app
+    - cp -r ${APP_PATH}/. /tmp/test-app/
+    - cd /tmp/test-app
+    - pnpm install --no-frozen-lockfile
+    - |
+      if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)" 2>/dev/null; then
+        echo ">>> pnpm build"
+        pnpm build
+      else
+        echo ">>> No build script, skipping"
+      fi
+    - |
+      if node -e "process.exit(require('./package.json').scripts?.typecheck ? 0 : 1)" 2>/dev/null; then
+        echo ">>> pnpm typecheck"
+        pnpm typecheck
+      else
+        echo ">>> No typecheck script, skipping"
+      fi
+    - echo "=== ${APP_PATH} OK ==="

@@ -1,0 +1,8 @@
+# AI Context boilerplates 검증
+
+validate:ai-context:
+  extends: .degit-node
+  parallel:
+    matrix:
+      - APP_PATH:
+          - ai-context/react-router-ssr-mcp

@@ -1,0 +1,144 @@
+# Tag-based Docker 빌드 + Portainer 배포
+#
+# 태그 형식: {이름}/v{연}.{월}.{패치}
+#   예) sample-ssr/v2026.3.1 → web/react-router-ssr-authentik 빌드
+#
+# deploy-registry.yml에서 태그 이름 → boilerplate 경로, 이미지, compose 매핑
+# 새 boilerplate 배포 추가 시 deploy-registry.yml만 수정하면 됨
+#
+# Runner: mac-mini-2 (shell executor, arm64 + QEMU amd64)
+#
+# CI Variables (GitLab Settings > CI/CD > Variables):
+#   DEVOPS_DEPLOY_TOKEN   — my-devops repo push용 GitLab Deploy Token [Protected, Masked]
+#   WEBHOOK_{NAME}        — Portainer stack webhook URL (이름별) [Protected, Masked]
+
+# ── Build Image ──────────────────────────────────────────────
+
+build-image:
+  stage: build-image
+  tags:
+    - shell
+    - mac-mini-2
+  timeout: 20m
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^[a-z0-9-]+\/v\d{4}\.\d+\.\d+$/'
+  before_script:
+    - export PATH="/opt/homebrew/bin:$PATH"
+    # nvm 로드 (Mac Mini 2 shell executor)
+    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    # 태그에서 이름과 버전 추출
+    - export DEPLOY_NAME="${CI_COMMIT_TAG%%/*}"
+    - export DEPLOY_VERSION="${CI_COMMIT_TAG#*/}"
+    - echo "Deploy name=${DEPLOY_NAME} version=${DEPLOY_VERSION}"
+    # deploy-registry.yml에서 설정 로드
+    - |
+      if ! grep -q "^${DEPLOY_NAME}:" deploy-registry.yml; then
+        echo "ERROR: '${DEPLOY_NAME}' not found in deploy-registry.yml"
+        echo "Available targets:"
+        grep '^[a-z]' deploy-registry.yml | cut -d: -f1
+        exit 1
+      fi
+    - export APP_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $2}')
+    - export IMAGE_NAME=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $3}')
+    - export COMPOSE_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $4}')
+    - export WEBHOOK_VAR=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $5}')
+    - echo "APP_PATH=${APP_PATH} IMAGE_NAME=${IMAGE_NAME}"
+    - echo "COMPOSE_PATH=${COMPOSE_PATH} WEBHOOK_VAR=${WEBHOOK_VAR}"
+    # QEMU + buildx
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+    - docker buildx use multiarch || docker buildx create --name multiarch --use --driver docker-container
+    - docker buildx inspect --bootstrap
+    # GitLab Registry login
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+  script:
+    - export PATH="/opt/homebrew/bin:$PATH"
+    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    - export DEPLOY_NAME="${CI_COMMIT_TAG%%/*}"
+    - export DEPLOY_VERSION="${CI_COMMIT_TAG#*/}"
+    - export APP_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $2}')
+    - export IMAGE_NAME=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $3}')
+    - |
+      FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
+      echo "Building ${FULL_IMAGE}:${DEPLOY_VERSION}"
+
+      # degit 시뮬레이션: 독립 디렉토리에 복사 → standalone lockfile 생성
+      rm -rf /tmp/build-app
+      mkdir -p /tmp/build-app
+      cp -r ${APP_PATH}/. /tmp/build-app/
+      cd /tmp/build-app
+
+      # pnpm lockfile 생성 (monorepo lockfile은 사용 불가)
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm install --no-frozen-lockfile
+
+      # 멀티플랫폼 빌드 + push (APP_VERSION → vite define → footer 표시)
+      docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --build-arg APP_VERSION=${DEPLOY_VERSION} \
+        -t ${FULL_IMAGE}:${DEPLOY_VERSION} \
+        -t ${FULL_IMAGE}:latest \
+        --push \
+        .
+
+      echo ""
+      echo "=== Images pushed ==="
+      echo "  ${FULL_IMAGE}:${DEPLOY_VERSION}"
+      echo "  ${FULL_IMAGE}:latest"
+
+# ── Deploy ───────────────────────────────────────────────────
+
+deploy:
+  stage: deploy
+  tags:
+    - shell
+    - mac-mini-2
+  timeout: 5m
+  needs:
+    - job: build-image
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^[a-z0-9-]+\/v\d{4}\.\d+\.\d+$/'
+  variables:
+    DEVOPS_REPO: https://gitlab.home.codepoet.site/k-codepoet/my-devops.git
+  script:
+    - export PATH="/opt/homebrew/bin:$PATH"
+    - export DEPLOY_NAME="${CI_COMMIT_TAG%%/*}"
+    - export DEPLOY_VERSION="${CI_COMMIT_TAG#*/}"
+    - export IMAGE_NAME=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $3}')
+    - export COMPOSE_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $4}')
+    - export WEBHOOK_VAR=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $5}')
+    - |
+      echo "Deploying ${DEPLOY_NAME} ${DEPLOY_VERSION}"
+
+      # Clone my-devops repo
+      git clone --depth 1 https://oauth2:${DEVOPS_DEPLOY_TOKEN}@gitlab.home.codepoet.site/k-codepoet/my-devops.git
+      cd my-devops
+
+      # Update image tag in compose (image: 라인만 매칭)
+      FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
+      sed -i '' "s|image:.*${IMAGE_NAME}:.*|image: ${FULL_IMAGE}:${DEPLOY_VERSION}|" ${COMPOSE_PATH}
+
+      echo "Updated compose:"
+      grep "image:" ${COMPOSE_PATH}
+
+      # Commit and push
+      git config user.name "GitLab CI"
+      git config user.email "ci@gitlab.home.codepoet.site"
+      git add ${COMPOSE_PATH}
+      git commit -m "deploy: ${DEPLOY_NAME} ${DEPLOY_VERSION}"
+      git push
+
+      # Portainer webhook
+      # WEBHOOK_VAR은 CI Variable 이름 (간접 참조)
+      WEBHOOK_URL=$(eval echo "\${${WEBHOOK_VAR}:-}")
+      if [ -n "${WEBHOOK_URL}" ]; then
+        echo "Triggering Portainer webhook..."
+        curl -sfk -X POST "${WEBHOOK_URL}" && echo "Webhook OK" || echo "Webhook failed (will update via polling)"
+      else
+        echo "${WEBHOOK_VAR} not set — stack will update via 5min polling"
+      fi
+
+      echo ""
+      echo "=== Deploy complete ==="
+      echo "  Image: ${IMAGE_NAME}:${DEPLOY_VERSION}"
+      echo "  Compose: ${COMPOSE_PATH}"
