@@ -364,7 +364,7 @@ deploy:
       # Update image tag in compose
       FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
       # 이미지 라인에서 태그만 교체 (이미지 경로는 유지)
-      sed -i "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${DEPLOY_VERSION}|" ${COMPOSE_PATH}
+      sed -i '' "s|${IMAGE_NAME}:.*|${IMAGE_NAME}:${DEPLOY_VERSION}|" ${COMPOSE_PATH}
 
       echo "Updated compose:"
       grep "image:" ${COMPOSE_PATH}
