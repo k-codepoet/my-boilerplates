@@ -313,9 +313,10 @@ build-image:
       corepack prepare pnpm@latest --activate
       pnpm install --no-frozen-lockfile
 
-      # 멀티플랫폼 빌드 + push
+      # 멀티플랫폼 빌드 + push (APP_VERSION → vite define → footer 표시)
       docker buildx build \
         --platform linux/amd64,linux/arm64 \
+        --build-arg APP_VERSION=${DEPLOY_VERSION} \
         -t ${FULL_IMAGE}:${DEPLOY_VERSION} \
         -t ${FULL_IMAGE}:latest \
         --push \
