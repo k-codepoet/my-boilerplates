@@ -1,0 +1,22 @@
+# Deploy Registry - 태그 이름 → 빌드/배포 매핑
+#
+# 형식 (공백 구분):
+#   {태그이름}: {boilerplate경로} {이미지경로} {compose경로} {webhook변수명}
+#
+# 태그 예시: sample-ssr/v2026.3.1
+#   → 이름: sample-ssr
+#   → 이 파일에서 sample-ssr: 행을 찾아 설정 로드
+#
+# 새 boilerplate 배포 추가 시:
+#   1. 이 파일에 행 추가
+#   2. GitLab CI Variables에 webhook 변수 추가 (Protected, Masked)
+#   3. git tag {이름}/v{연}.{월}.{패치} && git push origin --tags
+#
+# 필드 설명:
+#   태그이름       — git tag prefix ({이름}/v...)
+#   boilerplate경로 — repo 내 boilerplate 디렉토리
+#   이미지경로      — CI_REGISTRY_IMAGE 뒤에 붙는 경로 (e.g., sample-ssr → .../sample-ssr:tag)
+#   compose경로    — my-devops repo 내 docker-compose.yml 경로
+#   webhook변수명   — GitLab CI Variable 이름 (Portainer webhook URL)
+
+sample-ssr: web/react-router-ssr-authentik sample-ssr services/codepoet-mac-mini-2/sample-ssr/docker-compose.yml WEBHOOK_SAMPLE_SSR
