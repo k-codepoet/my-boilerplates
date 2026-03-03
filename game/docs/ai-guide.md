@@ -1,6 +1,6 @@
 # AI-GUIDE.md — AI 게임 생성 프로토콜
 
-> 이 문서는 AI(Claude Code 등)가 MSW 프레임워크를 사용해 게임을 생성할 때 따라야 할 프로토콜이다.
+> 이 문서는 AI(Claude Code 등)가 GameGlue 프레임워크를 사용해 게임을 생성할 때 따라야 할 프로토콜이다.
 > **이 문서만 읽고 바로 게임을 만들 수 있어야 한다.**
 
 ---
@@ -137,7 +137,7 @@ interface GameDefinitionData {
   "version": "1.0.0",
   "meta": {
     "title": "Platformer Demo",
-    "description": "A simple 2D platformer demo built with MSW Engine",
+    "description": "A simple 2D platformer demo built with GameGlue Framework",
     "thumbnail": "",
     "orientation": "landscape",
     "resolution": { "width": 800, "height": 600 }

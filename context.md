@@ -42,7 +42,7 @@
 
 ### game/ — 게임 엔진 (2종) 🔧
 
-**완료:** MSW Engine 코어, 4개 어댑터 (Canvas/PixiJS/Three.js/Phaser), 프로그래매틱 스프라이트, 리소스 파이프라인 듀얼 모드, 좌표 변환, 플랫포머 템플릿, React Router SPA 변형.
+**완료:** GameGlue Framework 코어, 4개 어댑터 (Canvas/PixiJS/Three.js/Phaser), 프로그래매틱 스프라이트, 리소스 파이프라인 듀얼 모드, 좌표 변환, 플랫포머 템플릿, React Router SPA 변형.
 
 **진행중/다음:** 어댑터 렌더링 테스트 → PNG 생성 → File-based 모드 검증 → SPA 동기화 → 추가 템플릿.
 상세: [game/README.md](game/README.md#다음-작업-next-steps)

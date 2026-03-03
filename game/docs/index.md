@@ -1,6 +1,6 @@
-# MSW Game Engine 문서
+# GameGlue Framework 문서
 
-> MSW(Micro Scene World) Engine의 아키텍처와 개발 가이드.
+> GameGlue Framework의 아키텍처와 개발 가이드.
 
 ## 아키텍처
 

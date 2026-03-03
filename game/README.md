@@ -1,8 +1,8 @@
 # Game 보일러플레이트
 
-> MSW Gameplay Framework 기반 게임 엔진 + 템플릿. "아무나 게임을 만들 수 있게."
+> GameGlue Framework 기반 게임 엔진 + 템플릿. "아무나 게임을 만들 수 있게."
 
-MSW(Micro Scene World) Engine은 **Scene + GameObject + Trait 조합 패턴**으로 게임을 만드는 프레임워크다. AI가 프레임워크의 규칙 안에서 게임 로직만 작성하면 완성된 게임이 나온다.
+GameGlue Framework은 **Scene + GameObject + Trait 조합 패턴**으로 게임을 만드는 프레임워크다. AI가 프레임워크의 규칙 안에서 게임 로직만 작성하면 완성된 게임이 나온다.
 
 ---
 
@@ -10,13 +10,13 @@ MSW(Micro Scene World) Engine은 **Scene + GameObject + Trait 조합 패턴**으
 
 | 이름 | 구조 | 용도 | 한 줄 설명 |
 |------|------|------|-----------|
-| **msw-engine** | Vite + React | 엔진 개발/테스트 | 순수 엔진, 단독 실행 |
-| **msw-react-router-spa** | React Router v7 | 웹 배포 (SPA) | Docker/nginx SPA 패턴 |
+| **gameglue-framework** | Vite + React | 엔진 개발/테스트 | 순수 엔진, 단독 실행 |
+| **gameglue-demo** | React Router v7 | 웹 배포 (SPA) | Docker/nginx SPA 패턴 |
 
 ### 어떤 걸 쓸까?
 
-- **엔진 코어 개발/테스트** → `msw-engine` (Vite dev server로 바로 실행)
-- **웹에 배포할 게임** → `msw-react-router-spa` (Docker/nginx, React Router 라우팅 포함)
+- **엔진 코어 개발/테스트** → `gameglue-framework` (Vite dev server로 바로 실행)
+- **웹에 배포할 게임** → `gameglue-demo` (Docker/nginx, React Router 라우팅 포함)
 
 두 보일러플레이트의 엔진 코드는 **독립 사본**이다. `degit` 호환을 위해 monorepo 패키지 의존성을 사용하지 않는다.
 
@@ -68,20 +68,20 @@ templates/{genre}/
 
 ## 빠른 시작
 
-### msw-engine (엔진 개발/테스트)
+### gameglue-framework (엔진 개발/테스트)
 
 ```bash
-cd game/msw-engine
+cd game/gameglue-framework
 pnpm install
 pnpm dev        # Vite dev server (HMR)
 pnpm build      # tsc && vite build
 pnpm typecheck  # tsc --noEmit
 ```
 
-### msw-react-router-spa (웹 배포)
+### gameglue-demo (웹 배포)
 
 ```bash
-cd game/msw-react-router-spa
+cd game/gameglue-demo
 pnpm install
 pnpm dev        # react-router dev (HMR)
 pnpm build      # react-router build
@@ -114,9 +114,9 @@ update(dt: number, collisions: Collision[], input?: InputState): void {
 
 - **런타임**: Node.js 22 (`.nvmrc`)
 - **패키지 매니저**: pnpm v10.12+ (`corepack enable`)
-- **빌드**: Vite 7 (msw-engine), React Router v7 (msw-react-router-spa)
+- **빌드**: Vite 7 (gameglue-framework), React Router v7 (gameglue-demo)
 - **스타일링**: Tailwind CSS v4, shadcn/ui
-- **경로 별칭**: `~/*` -> `./src/*` (msw-engine) / `~/*` -> `./app/*` (msw-react-router-spa)
+- **경로 별칭**: `~/*` -> `./src/*` (gameglue-framework) / `~/*` -> `./app/*` (gameglue-demo)
 
 ---
 
@@ -125,7 +125,7 @@ update(dt: number, collisions: Collision[], input?: InputState): void {
 - [ ] Pixi/Three/Phaser 어댑터 렌더링 테스트 (Canvas만 게임플레이 확인됨)
 - [ ] PNG 파일 생성 (`exportSpritePNGs` 실행 → `public/assets/platformer/`)
 - [ ] File-based 모드 독립 동작 확인 (Programmatic 없이 PNG만으로 실행)
-- [ ] `msw-react-router-spa`에 엔진 코드 동기화 (현재 msw-engine과 독립 사본으로 분기됨)
+- [ ] `gameglue-demo`에 엔진 코드 동기화 (현재 gameglue-framework과 독립 사본으로 분기됨)
 - [ ] 추가 게임 템플릿 (클리커, 퍼즐)
 - [ ] CI 파이프라인 추가 (현재 CI 미포함)
 - [ ] 테스트 프레임워크 도입 (현재 typecheck만 존재)

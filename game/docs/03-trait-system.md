@@ -1,6 +1,6 @@
 # Trait 시스템
 
-> `msw-engine/src/traits/` 디렉토리의 재사용 가능한 행위 컴포넌트들.
+> `gameglue-framework/src/traits/` 디렉토리의 재사용 가능한 행위 컴포넌트들.
 >
 > Trait 기반 클래스(`Trait.ts`)의 구조는 [02-engine-modules.md](02-engine-modules.md#traittsengin--행위-추상-기반-클래스) 참조.
 
@@ -21,7 +21,7 @@
 
 ### Movable — 이동 시스템
 
-> 파일: `msw-engine/src/traits/Movable.ts`
+> 파일: `gameglue-framework/src/traits/Movable.ts`
 
 ```typescript
 class Movable extends Trait {
@@ -46,7 +46,7 @@ class Movable extends Trait {
 
 ### Jumpable — 점프 + 중력
 
-> 파일: `msw-engine/src/traits/Jumpable.ts`
+> 파일: `gameglue-framework/src/traits/Jumpable.ts`
 
 Movable에 의존한다. 점프 시 `movable.vy = jumpForce`로 수직 속도를 설정하고, 매 프레임 중력을 적용한다.
 
@@ -70,7 +70,7 @@ class Jumpable extends Trait {
 
 ### Damageable — 체력/피격 시스템
 
-> 파일: `msw-engine/src/traits/Damageable.ts`
+> 파일: `gameglue-framework/src/traits/Damageable.ts`
 
 ```typescript
 class Damageable extends Trait {
@@ -96,7 +96,7 @@ class Damageable extends Trait {
 
 ### Scorer — 점수 관리
 
-> 파일: `msw-engine/src/traits/Scorer.ts`
+> 파일: `gameglue-framework/src/traits/Scorer.ts`
 
 ```typescript
 class Scorer extends Trait {
@@ -113,7 +113,7 @@ class Scorer extends Trait {
 
 ### Animated — 스프라이트 애니메이션
 
-> 파일: `msw-engine/src/traits/Animated.ts`
+> 파일: `gameglue-framework/src/traits/Animated.ts`
 
 ```typescript
 class Animated extends Trait {
@@ -127,7 +127,7 @@ class Animated extends Trait {
 
 ### Collidable — 물리 바디 연동
 
-> 파일: `msw-engine/src/traits/Collidable.ts`
+> 파일: `gameglue-framework/src/traits/Collidable.ts`
 
 init 시 Physics 서브시스템에 바디를 등록하고, 매 프레임 GameObject의 위치를 물리 바디에 동기화한다.
 
@@ -142,13 +142,13 @@ config: {
 
 ### Tappable — 포인터 탭 감지
 
-> 파일: `msw-engine/src/traits/Tappable.ts`
+> 파일: `gameglue-framework/src/traits/Tappable.ts`
 
 매 프레임 포인터 위치가 오브젝트의 히트 영역 안에 있고 `justPressed`에 `"tap"` 또는 `"pointer_down"`이 있으면 `"tapped"` 이벤트를 발행한다.
 
 ### Timer — 시간 관리
 
-> 파일: `msw-engine/src/traits/Timer.ts`
+> 파일: `gameglue-framework/src/traits/Timer.ts`
 
 ```typescript
 config: {

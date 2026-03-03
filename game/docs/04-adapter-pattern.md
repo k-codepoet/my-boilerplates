@@ -1,10 +1,10 @@
 # 어댑터 패턴
 
-> `msw-engine/src/adapters/` 디렉토리. 플랫폼 추상화를 통해 렌더링 엔진을 교체할 수 있는 구조.
+> `gameglue-framework/src/adapters/` 디렉토리. 플랫폼 추상화를 통해 렌더링 엔진을 교체할 수 있는 구조.
 
 ## EngineAdapterInterface
 
-> 파일: `msw-engine/src/engine/types.ts:394-404`
+> 파일: `gameglue-framework/src/engine/types.ts:394-404`
 
 ```typescript
 interface EngineAdapterInterface {
@@ -51,7 +51,7 @@ interface EngineAdapterInterface {
 
 ### CanvasAdapter — 통합 어댑터
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasAdapter.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasAdapter.ts`
 
 CanvasAdapter는 모든 서브시스템을 Canvas 2D API 기반으로 구현한다.
 
@@ -81,7 +81,7 @@ ctx = canvas.getContext("2d")
 
 ### CanvasInput — 입력 폴링
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasInput.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasInput.ts`
 
 ```
 키보드 이벤트 (브라우저)           액션 매핑 (game.json)
@@ -120,7 +120,7 @@ inputMap: { "jump": ["ArrowUp", "Space"] }
 
 ### CanvasPhysics — AABB 충돌 감지
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasPhysics.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasPhysics.ts`
 
 - AABB(Axis-Aligned Bounding Box) 충돌 감지
 - `dynamic` 바디만 충돌의 "a" 측으로 테스트
@@ -129,7 +129,7 @@ inputMap: { "jump": ["ArrowUp", "Space"] }
 
 ### CanvasRenderer — 스프라이트 렌더링
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasRenderer.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasRenderer.ts`
 
 DrawCommand 큐를 처리하여 Canvas 2D에 렌더링한다.
 
@@ -148,7 +148,7 @@ processDrawQueue(commands)        render(dt)
 
 ### CanvasAudio — Web Audio API
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasAudio.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasAudio.ts`
 
 - `AudioContext` 지연 생성 (`ensureContext`)
 - SFX: fire-and-forget 패턴 (source 추적 없음)
@@ -157,7 +157,7 @@ processDrawQueue(commands)        render(dt)
 
 ### CanvasAssetFactory — 에셋 로딩
 
-> 파일: `msw-engine/src/adapters/canvas/CanvasAssetFactory.ts`
+> 파일: `gameglue-framework/src/adapters/canvas/CanvasAssetFactory.ts`
 
 | 메서드 | 입력 | 출력 |
 |--------|------|------|
@@ -201,7 +201,7 @@ game.loop.onRender = () => {
 
 ### PixiAdapter — PixiJS v8
 
-> 파일: `msw-engine/src/adapters/pixi/`
+> 파일: `gameglue-framework/src/adapters/pixi/`
 
 ```
 PixiAdapter.ts          # 어댑터 메인 (비동기 초기화)
@@ -220,7 +220,7 @@ PixiAssetFactory.ts     # CanvasAssetFactory 재사용
 
 ### ThreeAdapter — Three.js
 
-> 파일: `msw-engine/src/adapters/three/`
+> 파일: `gameglue-framework/src/adapters/three/`
 
 ```
 ThreeAdapter.ts         # 어댑터 메인
@@ -238,7 +238,7 @@ ThreeAssetFactory.ts    # CanvasAssetFactory 재사용
 
 ### PhaserAdapter — Phaser 3
 
-> 파일: `msw-engine/src/adapters/phaser/`
+> 파일: `gameglue-framework/src/adapters/phaser/`
 
 ```
 PhaserAdapter.ts        # 어댑터 메인 (비동기 Scene 초기화)

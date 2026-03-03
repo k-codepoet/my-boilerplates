@@ -1,6 +1,6 @@
 # 리소스 파이프라인 — 스프라이트와 에셋 시스템
 
-> MSW 엔진의 스프라이트 생성 및 에셋 관리 파이프라인.
+> GameGlue Framework의 스프라이트 생성 및 에셋 관리 파이프라인.
 > 두 가지 모드(프로그래매틱 / 파일 기반)를 런타임에 토글할 수 있다.
 
 ---
@@ -270,8 +270,8 @@ enemy.png
 ### GameCanvas.tsx에서의 토글 구현
 
 ```typescript
-const STORAGE_KEY_ADAPTER  = "msw-engine:adapter";
-const STORAGE_KEY_RESOURCE = "msw-engine:resource";
+const STORAGE_KEY_ADAPTER  = "gameglue:adapter";
+const STORAGE_KEY_RESOURCE = "gameglue:resource";
 ```
 
 두 개의 버튼 그룹이 렌더된다:

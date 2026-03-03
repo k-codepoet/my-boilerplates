@@ -2,16 +2,16 @@
 
 ## "아무나 게임을 만들 수 있게"
 
-MSW Game Engine은 **AI와 프레임워크의 결합**으로 게임 개발의 진입 장벽을 없애는 것을 목표로 한다. AI가 프레임워크의 규칙 안에서 게임 로직만 작성하면 완성된 게임이 나온다.
+GameGlue Framework은 **AI와 프레임워크의 결합**으로 게임 개발의 진입 장벽을 없애는 것을 목표로 한다. AI가 프레임워크의 규칙 안에서 게임 로직만 작성하면 완성된 게임이 나온다.
 
 **핵심 비유:**
 
 ```
 웹 개발:  Canvas API / DOM   →   React   →   Remix / Next.js
-게임 개발: Canvas / Phaser    →   (없음)  →   MSW Gameplay Framework  ← 이것을 만든다
+게임 개발: Canvas / Phaser    →   (없음)  →   GameGlue Framework  ← 이것을 만든다
 ```
 
-웹 개발에서 React가 UI 컴포넌트의 구조를 잡아주고, Remix가 라우팅/데이터 로딩의 규칙을 제공하듯, MSW Engine은 게임 오브젝트의 구조(GameObject + Trait)와 게임 흐름의 규칙(Scene + GameLoop)을 제공한다.
+웹 개발에서 React가 UI 컴포넌트의 구조를 잡아주고, Remix가 라우팅/데이터 로딩의 규칙을 제공하듯, GameGlue Framework은 게임 오브젝트의 구조(GameObject + Trait)와 게임 흐름의 규칙(Scene + GameLoop)을 제공한다.
 
 ## 진화 과정
 

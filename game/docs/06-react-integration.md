@@ -1,10 +1,10 @@
 # React 통합
 
-> `msw-engine/src/ui/` 디렉토리 및 `msw-react-router-spa` 변형.
+> `gameglue-framework/src/ui/` 디렉토리 및 `gameglue-demo` 변형.
 
 ## GameCanvas.tsx 패턴
 
-> 파일: `msw-engine/src/ui/GameCanvas.tsx`
+> 파일: `gameglue-framework/src/ui/GameCanvas.tsx`
 
 ### 두 가지 루프의 분리
 
@@ -61,8 +61,8 @@ GameCanvas는 두 가지 런타임 설정을 제공한다:
 
 - 토글 변경 시 useEffect가 다시 실행되어 게임 인스턴스를 재생성한다
 - 선택 값은 `localStorage`에 저장되어 새로고침 후에도 유지된다
-  - `msw-engine:adapter` — 어댑터 타입 (canvas/pixi/three/phaser)
-  - `msw-engine:resource` — 리소스 모드 (programmatic/file)
+  - `gameglue-framework:adapter` — 어댑터 타입 (canvas/pixi/three/phaser)
+  - `gameglue-framework:resource` — 리소스 모드 (programmatic/file)
 
 ### 정리 (Cleanup)
 
@@ -97,9 +97,9 @@ setInterval(100ms)     ← 10Hz 폴링
         └─ DebugOverlay: FPS, 오브젝트 수, 현재 씬
 ```
 
-## msw-react-router-spa 변형
+## gameglue-demo 변형
 
-`msw-react-router-spa`는 엔진 코드의 **독립 사본**을 React Router v7 SPA로 래핑한 것이다. `degit` 호환을 위해 monorepo 패키지 의존성을 사용하지 않는다.
+`gameglue-demo`는 엔진 코드의 **독립 사본**을 React Router v7 SPA로 래핑한 것이다. `degit` 호환을 위해 monorepo 패키지 의존성을 사용하지 않는다.
 
 - **라우팅**: React Router v7의 `/play` 라우트에서 게임 실행
 - **배포**: Docker + nginx SPA 패턴 (`try_files` fallback)

@@ -1,10 +1,10 @@
 # 엔진 코어 모듈
 
-> `msw-engine/src/engine/` 디렉토리의 핵심 모듈들.
+> `gameglue-framework/src/engine/` 디렉토리의 핵심 모듈들.
 
 ## Game.ts — 중앙 오케스트레이터
 
-> 파일: `msw-engine/src/engine/Game.ts`
+> 파일: `gameglue-framework/src/engine/Game.ts`
 
 Game 클래스는 엔진의 진입점이자 모든 서브시스템을 연결하는 오케스트레이터다.
 
@@ -44,7 +44,7 @@ this.loop.onUpdate = (dt) => {
 
 ## GameLoop.ts — 고정 타임스텝 루프
 
-> 파일: `msw-engine/src/engine/GameLoop.ts`
+> 파일: `gameglue-framework/src/engine/GameLoop.ts`
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -75,7 +75,7 @@ this.loop.onUpdate = (dt) => {
 
 ## Scene.ts — GameObject 컨테이너
 
-> 파일: `msw-engine/src/engine/Scene.ts`
+> 파일: `gameglue-framework/src/engine/Scene.ts`
 
 Scene은 GameObject들의 컨테이너이자 라이프사이클 관리자다.
 
@@ -116,7 +116,7 @@ changeScene(name: string, data?: Record<string, unknown>): void {
 
 ## GameObject.ts — Trait 조합 기반 엔티티
 
-> 파일: `msw-engine/src/engine/GameObject.ts`
+> 파일: `gameglue-framework/src/engine/GameObject.ts`
 
 GameObject는 게임 내 모든 엔티티의 기본 클래스다. **상속 대신 조합(Composition over Inheritance)** 패턴을 사용한다.
 
@@ -162,7 +162,7 @@ obj.emit("hit", { damage: 10 });
 
 ## Trait.ts — 행위 추상 기반 클래스
 
-> 파일: `msw-engine/src/engine/Trait.ts`
+> 파일: `gameglue-framework/src/engine/Trait.ts`
 
 ```typescript
 abstract class Trait {
@@ -196,7 +196,7 @@ addTrait(trait)  →  attach(gameObject)  →  init()  →  update(dt) ...  → 
 
 ## GameState.ts — 중앙 상태 관리
 
-> 파일: `msw-engine/src/engine/GameState.ts`
+> 파일: `gameglue-framework/src/engine/GameState.ts`
 
 게임 전역 상태를 관리하는 옵저버블 Map. `score`, `health`, `screen` 같은 게임 레벨 데이터를 저장한다.
 
@@ -227,7 +227,7 @@ const score = state.get<number>("score") ?? 0;
 
 ## EventBus.ts — 이벤트 시스템
 
-> 파일: `msw-engine/src/engine/EventBus.ts`
+> 파일: `gameglue-framework/src/engine/EventBus.ts`
 
 **두 가지 EventBus:**
 
@@ -248,7 +248,7 @@ class EventBus {
 
 ## GameRule.ts — 승리/패배 조건 평가
 
-> 파일: `msw-engine/src/engine/GameRule.ts`
+> 파일: `gameglue-framework/src/engine/GameRule.ts`
 
 game.json의 `rules` 정의를 기반으로 승리/패배 조건을 평가하는 유틸리티 함수다.
 
@@ -336,7 +336,7 @@ interface InputState {
 
 ### DrawCommand 패턴
 
-> 파일: `msw-engine/src/render/DrawCommand.ts`, `msw-engine/src/engine/types.ts:135-157`
+> 파일: `gameglue-framework/src/render/DrawCommand.ts`, `gameglue-framework/src/engine/types.ts:135-157`
 
 렌더링은 **명령형 커맨드 큐** 패턴으로 동작한다. 게임 로직이 직접 Canvas를 조작하지 않고, DrawCommand 배열을 생성하면 어댑터가 이를 처리한다.
 
@@ -383,7 +383,7 @@ class CommandPool {
 
 ### 전체 스키마
 
-> 타입: `msw-engine/src/engine/types.ts:334-352` (`GameDefinitionData`)
+> 타입: `gameglue-framework/src/engine/types.ts:334-352` (`GameDefinitionData`)
 
 ```typescript
 interface GameDefinitionData {
@@ -473,7 +473,7 @@ stack: {
   "version": "1.0.0",
   "meta": {
     "title": "Platformer Demo",
-    "description": "A simple 2D platformer demo built with MSW Engine",
+    "description": "A simple 2D platformer demo built with GameGlue Framework",
     "orientation": "landscape",
     "resolution": { "width": 800, "height": 600 }
   },
@@ -515,7 +515,7 @@ stack: {
 
 ### 플랫포머 템플릿 구현 상세
 
-> 파일: `msw-engine/src/templates/platformer/`
+> 파일: `gameglue-framework/src/templates/platformer/`
 
 ```
 templates/platformer/
@@ -663,7 +663,7 @@ requestAnimationFrame(timestamp)
 ## 부록: 디렉토리 구조 전체
 
 ```
-msw-engine/src/
+gameglue-framework/src/
 ├── engine/                    # 핵심 엔진
 │   ├── Game.ts                # 중앙 오케스트레이터
 │   ├── GameLoop.ts            # 고정 타임스텝 루프

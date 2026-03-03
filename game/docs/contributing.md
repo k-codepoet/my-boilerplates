@@ -1,6 +1,6 @@
-# CONTRIBUTING.md — MSW Game Engine 개발 가이드
+# CONTRIBUTING.md — GameGlue Framework 개발 가이드
 
-MSW(Micro Scene World) Game Engine 보일러플레이트에 기여하기 위한 실전 가이드.
+GameGlue Framework 보일러플레이트에 기여하기 위한 실전 가이드.
 
 ---
 
@@ -11,12 +11,12 @@ MSW(Micro Scene World) Game Engine 보일러플레이트에 기여하기 위한 
 - **Node.js 22** (`.nvmrc` 포함)
 - **pnpm v10.12+** (`corepack enable`으로 설치)
 
-### msw-engine (단독 실행)
+### gameglue-framework (단독 실행)
 
 엔진 코어 개발 및 테스트용. 순수 Vite + React 환경.
 
 ```bash
-cd game/msw-engine
+cd game/gameglue-framework
 pnpm install
 pnpm dev        # Vite dev server (HMR)
 pnpm build      # tsc && vite build
@@ -25,12 +25,12 @@ pnpm typecheck  # tsc --noEmit
 
 빌드 결과: `dist/`
 
-### msw-react-router-spa (React Router 통합)
+### gameglue-demo (React Router 통합)
 
 웹 배포용. React Router v7 + Docker/nginx SPA 패턴.
 
 ```bash
-cd game/msw-react-router-spa
+cd game/gameglue-demo
 pnpm install
 pnpm dev        # react-router dev (HMR)
 pnpm build      # react-router build
@@ -45,7 +45,7 @@ pnpm typecheck  # react-router typegen && tsc
 
 ### 두 보일러플레이트의 관계
 
-| | msw-engine | msw-react-router-spa |
+| | gameglue-framework | gameglue-demo |
 |---|---|---|
 | 용도 | 엔진 개발/테스트 | 웹 배포 (SPA) |
 | 프레임워크 | Vite + React | React Router v7 |
@@ -54,18 +54,18 @@ pnpm typecheck  # react-router typegen && tsc
 
 **핵심**: 엔진 코드는 **완전 복사**된다. monorepo 패키지 의존성이 아니다.
 
-왜? `degit`으로 각 보일러플레이트를 독립적으로 복사해야 하므로, 외부 패키지 참조가 불가능하다. 따라서 `msw-react-router-spa/app/engine/`은 `msw-engine/src/engine/`의 사본이다.
+왜? `degit`으로 각 보일러플레이트를 독립적으로 복사해야 하므로, 외부 패키지 참조가 불가능하다. 따라서 `gameglue-demo/app/engine/`은 `gameglue-framework/src/engine/`의 사본이다.
 
 ### 경로 별칭 (Path Alias)
 
 | 보일러플레이트 | 별칭 | 대상 |
 |---|---|---|
-| msw-engine | `~/*` | `./src/*` |
-| msw-react-router-spa | `~/*` | `./app/*` |
+| gameglue-framework | `~/*` | `./src/*` |
+| gameglue-demo | `~/*` | `./app/*` |
 
 `tsconfig.json`의 `paths`와 `vite-tsconfig-paths` 플러그인으로 해석된다.
 
-### 디렉토리 맵 (msw-engine 기준)
+### 디렉토리 맵 (gameglue-framework 기준)
 
 ```
 src/
@@ -584,11 +584,11 @@ update(dt: number, collisions: Collision[], input?: InputState): void {
 
 ### 엔진 코드 양쪽 동기화
 
-`msw-engine`의 엔진 코드를 수정하면, `msw-react-router-spa`에도 동일한 변경을 반영해야 한다. 두 보일러플레이트의 엔진 코드는 독립 사본이므로 자동 동기화되지 않는다.
+`gameglue-framework`의 엔진 코드를 수정하면, `gameglue-demo`에도 동일한 변경을 반영해야 한다. 두 보일러플레이트의 엔진 코드는 독립 사본이므로 자동 동기화되지 않는다.
 
 동기화 대상 디렉토리:
 
-| msw-engine | msw-react-router-spa |
+| gameglue-framework | gameglue-demo |
 |---|---|
 | `src/engine/` | `app/engine/` |
 | `src/adapters/` | `app/adapters/` |

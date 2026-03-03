@@ -1,10 +1,10 @@
 # 메모리 최적화
 
-> `msw-engine/src/memory/` 디렉토리. GC 압력을 최소화하고 캐시 지역성을 높이는 메모리 관리 전략.
+> `gameglue-framework/src/memory/` 디렉토리. GC 압력을 최소화하고 캐시 지역성을 높이는 메모리 관리 전략.
 
 ## TransformBuffer — Float32Array 풀링
 
-> 파일: `msw-engine/src/memory/TransformBuffer.ts`
+> 파일: `gameglue-framework/src/memory/TransformBuffer.ts`
 
 모든 GameObject의 Transform 데이터를 단일 `Float32Array`에 연속으로 저장한다.
 
@@ -70,7 +70,7 @@ this.transformIndex = sharedTransformBuffer.allocate();
 
 ## ObjectPool — 범용 오브젝트 풀
 
-> 파일: `msw-engine/src/memory/ObjectPool.ts`
+> 파일: `gameglue-framework/src/memory/ObjectPool.ts`
 
 ```typescript
 class ObjectPool<T> {
@@ -91,7 +91,7 @@ class ObjectPool<T> {
 
 ## EventPool — 이벤트 오브젝트 풀
 
-> 파일: `msw-engine/src/memory/EventPool.ts`
+> 파일: `gameglue-framework/src/memory/EventPool.ts`
 
 이벤트 객체(`{ type, data }`)를 타입별로 풀링한다.
 
@@ -106,7 +106,7 @@ class EventPool {
 
 ## CommandPool — DrawCommand 제로 할당
 
-> 파일: `msw-engine/src/render/DrawCommand.ts`
+> 파일: `gameglue-framework/src/render/DrawCommand.ts`
 
 렌더링 커맨드도 풀링하여 프레임마다 새 배열을 할당하지 않는다.
 

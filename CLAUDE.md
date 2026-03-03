@@ -36,8 +36,8 @@ bot/                              # Bot/Processor (3종)
 → 상세: bot/README.md · bot/docs/index.md
 
 game/                             # 게임 엔진 (2종)
-├── msw-engine/                   # MSW 엔진 코어, Vite
-└── msw-react-router-spa/         # MSW + React Router SPA
+├── gameglue-framework/           # GameGlue Framework 코어, Vite
+└── gameglue-demo/                # GameGlue + React Router SPA
 → 상세: game/README.md · game/docs/
 
 ai-context/                       # AI 컨텍스트 관리 (1종)
@@ -108,7 +108,7 @@ pnpm dev | build | typecheck | mcp:dev | db:push | db:studio
 
 ## Key Patterns (Quick Reference)
 
-**Path Aliases:** `~/*` → `./app/*` (web/native/game). TanStack uses `@/*` → `./src/*`. msw-engine uses `~/*` → `./src/*`.
+**Path Aliases:** `~/*` → `./app/*` (web/native/game). TanStack uses `@/*` → `./src/*`. gameglue-framework uses `~/*` → `./src/*`.
 
 **Vite Plugin Order:** `tailwindcss()` → framework plugin → `tsconfigPaths()`. Cloudflare SSR prepends `cloudflareDevProxy()`. TanStack order differs — see `web/README.md`.
 
@@ -116,7 +116,7 @@ pnpm dev | build | typecheck | mcp:dev | db:push | db:studio
 
 **CLI npm Distribution:** `npm/bin/cli.js` + `install.js` → 6 platform optional deps. Tag push triggers CI build + npm publish.
 
-**MSW Game Engine:** Scene → GameObject → Trait composition. 4 adapters (Canvas/PixiJS/Three.js/Phaser) with runtime toggle. Programmatic sprites via OffscreenCanvas → ImageBitmap. Coordinate conversion: gameplay uses top-left, renderers use center-origin — `getRenderTransform()` bridges. **Scene must never re-poll input** — use `update(dt, collisions, input)` parameter.
+**GameGlue Framework:** Scene → GameObject → Trait composition. 4 adapters (Canvas/PixiJS/Three.js/Phaser) with runtime toggle. Programmatic sprites via OffscreenCanvas → ImageBitmap. Coordinate conversion: gameplay uses top-left, renderers use center-origin — `getRenderTransform()` bridges. **Scene must never re-poll input** — use `update(dt, collisions, input)` parameter.
 
 **Naming Convention:** `{framework}-{rendering}[-{platform}]`
 
@@ -137,7 +137,7 @@ pnpm dev | build | typecheck | mcp:dev | db:push | db:studio
 |------|--------|
 | React Router | `build/client/`, `build/server/` |
 | TanStack Start | `.output/server/index.mjs` |
-| Vite SPA (MSW Engine, TanStack Router) | `dist/` |
+| Vite SPA (GameGlue Framework, TanStack Router) | `dist/` |
 | Rust CLI | `target/release/` |
 | Go CLI | binary in project root |
 | TypeScript (tsc) | `dist/` |
