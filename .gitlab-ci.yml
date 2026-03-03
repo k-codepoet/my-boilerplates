@@ -300,10 +300,12 @@ build-image:
     - export APP_PATH=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $2}')
     - export IMAGE_NAME=$(grep "^${DEPLOY_NAME}:" deploy-registry.yml | awk '{print $3}')
     - |
+      export PATH="/opt/homebrew/bin:$PATH"
       FULL_IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}"
       echo "Building ${FULL_IMAGE}:${DEPLOY_VERSION}"
 
       # degit 시뮬레이션: 독립 디렉토리에 복사 → standalone lockfile 생성
+      rm -rf /tmp/build-app
       mkdir -p /tmp/build-app
       cp -r ${APP_PATH}/. /tmp/build-app/
       cd /tmp/build-app
