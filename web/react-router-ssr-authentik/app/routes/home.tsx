@@ -52,14 +52,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               </a>
             )}
           </div>
-          <footer className="mt-12 text-xs text-muted-foreground/60">
-            {__APP_VERSION__} · {__BUILD_TIME__}
-          </footer>
         </div>
       </main>
     </div>
   );
 }
-
-declare const __BUILD_TIME__: string;
-declare const __APP_VERSION__: string;
