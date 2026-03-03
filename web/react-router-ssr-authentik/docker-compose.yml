@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - AUTHENTIK_API_TOKEN=${AUTHENTIK_API_TOKEN}
+      - AUTHENTIK_ISSUER=${AUTHENTIK_ISSUER:-https://auth.codepoet.site/application/o/sample-ssr}
+    restart: unless-stopped
