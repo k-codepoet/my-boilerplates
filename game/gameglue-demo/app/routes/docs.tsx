@@ -12,7 +12,7 @@ import browserCollections from "fumadocs-mdx:collections/browser";
 import { baseOptions } from "~/lib/layout.shared";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const slugs = (params["*"] ?? "").split("/").filter((v) => v.length > 0);
   const page = source.getPage(slugs);
   if (!page) throw new Response("Not found", { status: 404 });
@@ -24,7 +24,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
-const clientLoader = browserCollections.docs.createClientLoader({
+const mdxClientLoader = browserCollections.docs.createClientLoader({
   component({ toc, frontmatter, default: Mdx }) {
     return (
       <DocsPage toc={toc}>
@@ -40,14 +40,12 @@ const clientLoader = browserCollections.docs.createClientLoader({
   },
 });
 
-export { clientLoader };
-
 export default function Page({ loaderData }: Route.ComponentProps) {
   const { pageTree, ...rest } = useFumadocsLoader(loaderData);
 
   return (
     <DocsLayout {...baseOptions()} tree={pageTree}>
-      {clientLoader.useContent(loaderData.path, {
+      {mdxClientLoader.useContent(loaderData.path, {
         ...rest,
       })}
     </DocsLayout>
