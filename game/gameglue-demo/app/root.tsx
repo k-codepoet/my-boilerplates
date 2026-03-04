@@ -5,12 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  Link,
-  useLocation,
 } from "react-router";
+import { RootProvider } from "fumadocs-ui/provider/react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import SearchDialog from "~/components/search";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,16 +27,16 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
-        <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40">
+      <body className="flex flex-col min-h-screen">
+        <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
+        <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40 z-50">
           {__APP_VERSION__} · {__BUILD_TIME__}
         </footer>
         <ScrollRestoration />
@@ -46,50 +46,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Nav() {
-  const location = useLocation();
-  const isPlay = location.pathname === "/play";
-
-  return (
-    <nav className="flex items-center gap-4 px-6 py-3 bg-muted/50 border-b">
-      <Link to="/" className="font-bold text-lg">
-        GameGlue
-      </Link>
-      <div className="flex gap-2 ml-auto">
-        <Link
-          to="/"
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            !isPlay
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Home
-        </Link>
-        <Link
-          to="/play"
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            isPlay
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Play
-        </Link>
-      </div>
-    </nav>
-  );
-}
-
 export default function App() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Nav />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-    </div>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

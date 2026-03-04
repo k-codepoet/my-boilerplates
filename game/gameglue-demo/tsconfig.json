@@ -15,7 +15,8 @@
     "rootDirs": [".", "./.react-router/types"],
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "fumadocs-mdx:collections/*": [".source/*"]
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

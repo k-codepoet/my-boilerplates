@@ -1,0 +1,23 @@
+---
+title: GameGlue Framework
+description: GameGlue Framework 아키텍처와 개발 가이드
+---
+
+## 아키텍처
+
+| 문서 | 설명 |
+|------|------|
+| [비전과 설계 철학](/docs/vision) | 비전과 설계 철학 — "아무나 게임을 만들 수 있게", 계층 구조 개요 |
+| [엔진 코어 모듈](/docs/engine-modules) | 엔진 코어 모듈 — Game, Scene, GameObject, GameLoop, EventBus, GameState, 입력/렌더/템플릿 |
+| [Trait 시스템](/docs/trait-system) | Trait 시스템 — 8개 Trait 상세, 조합 패턴 |
+| [어댑터 패턴](/docs/adapter-pattern) | 어댑터 패턴 — EngineAdapterInterface, 4개 어댑터 구현 (Canvas/PixiJS/Three.js/Phaser), 좌표 변환, 새 어댑터 추가 가이드 |
+| [메모리 최적화](/docs/memory-optimization) | 메모리 최적화 — TransformBuffer, ObjectPool, EventPool, CommandPool |
+| [React 통합](/docs/react-integration) | React 통합 — GameCanvas 패턴, 60FPS/10Hz 이중 루프, React Router SPA 변형 |
+| [리소스 파이프라인](/docs/resource-pipeline) | 리소스 파이프라인 — 프로그래매틱(OffscreenCanvas→ImageBitmap) vs 파일 기반(PNG→AssetFactory), 런타임 토글, localStorage 지속 |
+
+## 개발 가이드
+
+| 문서 | 설명 |
+|------|------|
+| [개발 가이드](/docs/contributing) | 개발 가이드 — 프로젝트 구조, 4개 어댑터, 리소스 파이프라인, 현재 구현 상태, 로드맵 |
+| [AI 생성 프로토콜](/docs/ai-guide) | AI 생성 프로토콜 — AI가 게임을 만드는 6단계 프로토콜, Trait 조합 레시피, 코드 패턴 |
