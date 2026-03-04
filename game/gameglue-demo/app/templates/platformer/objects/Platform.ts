@@ -1,4 +1,4 @@
-import { GameObject } from "~/engine/GameObject";
+import { GameObject } from "@gameglue/core/engine";
 
 export function createPlatform(
   id: string,
@@ -9,13 +9,12 @@ export function createPlatform(
 ): GameObject {
   const platform = new GameObject(id, "platform");
 
-  // x,y = top-left corner, width/height stored via scale
   platform.state.transform.x = x;
   platform.state.transform.y = y;
   platform.state.transform.scale.x = width;
   platform.state.transform.scale.y = height;
 
-  platform.state.visual.assetKey = "platform";
+  platform.state.visual.assetKey = id === "ground" ? "ground" : "platform";
   platform.state.visual.state = "default";
   platform.state.visual.visible = true;
   platform.state.visual.opacity = 1;

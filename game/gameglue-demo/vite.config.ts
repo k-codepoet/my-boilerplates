@@ -14,7 +14,9 @@ export default defineConfig({
     mdx(MdxConfig),
     tailwindcss(),
     reactRouter(),
-    tsconfigPaths({ projects: ["./tsconfig.json"] }),
+    tsconfigPaths({
+      projects: ["./tsconfig.json", "./packages/core/tsconfig.json"],
+    }),
   ],
   server: {
     warmup: {

@@ -1,5 +1,5 @@
-import { GameObject } from "~/engine/GameObject";
-import { Movable } from "~/traits/Movable";
+import { GameObject } from "@gameglue/core/engine";
+import { Movable } from "@gameglue/core/traits";
 
 export const ENEMY_W = 26;
 export const ENEMY_H = 26;

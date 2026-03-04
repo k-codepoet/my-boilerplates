@@ -45,9 +45,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
 
   return (
     <DocsLayout {...baseOptions()} tree={pageTree}>
-      {mdxClientLoader.useContent(loaderData.path, {
-        ...rest,
-      })}
+      {mdxClientLoader.useContent(loaderData.path, rest as never)}
     </DocsLayout>
   );
 }

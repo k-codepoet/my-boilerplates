@@ -1,4 +1,4 @@
-import { GameObject } from "~/engine/GameObject";
+import { GameObject } from "@gameglue/core/engine";
 
 export const COIN_SIZE = 14;
 

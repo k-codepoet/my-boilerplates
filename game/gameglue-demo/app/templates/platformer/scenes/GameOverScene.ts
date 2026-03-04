@@ -1,5 +1,5 @@
-import type { Collision, InputState } from "~/engine/types";
-import { Scene } from "~/engine/Scene";
+import type { Collision, InputState } from "@gameglue/core/engine";
+import { Scene } from "@gameglue/core/engine";
 
 export class GameOverScene extends Scene {
   constructor() {

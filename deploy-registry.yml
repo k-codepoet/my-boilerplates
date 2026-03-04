@@ -21,4 +21,3 @@
 
 sample-ssr: web/react-router-ssr-authentik sample-ssr services/codepoet-mac-mini-2/sample-ssr/docker-compose.yml WEBHOOK_SAMPLE_SSR
 gameglue-demo: game/gameglue-demo gameglue-demo services/codepoet-mac-mini-2/gameglue-demo/docker-compose.yml WEBHOOK_GAMEGLUE_DEMO
-gameglue-framework: game/gameglue-framework gameglue-framework services/codepoet-mac-mini-2/gameglue-framework/docker-compose.yml WEBHOOK_GAMEGLUE_FRAMEWORK

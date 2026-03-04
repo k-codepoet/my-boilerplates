@@ -1,0 +1,66 @@
+{
+  "name": "@gameglue/core",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./engine": {
+      "types": "./src/engine/index.ts",
+      "default": "./src/engine/index.ts"
+    },
+    "./adapters": {
+      "types": "./src/adapters/index.ts",
+      "default": "./src/adapters/index.ts"
+    },
+    "./adapters/canvas": {
+      "types": "./src/adapters/canvas/CanvasAdapter.ts",
+      "default": "./src/adapters/canvas/CanvasAdapter.ts"
+    },
+    "./adapters/pixi": {
+      "types": "./src/adapters/pixi/PixiAdapter.ts",
+      "default": "./src/adapters/pixi/PixiAdapter.ts"
+    },
+    "./adapters/three": {
+      "types": "./src/adapters/three/ThreeAdapter.ts",
+      "default": "./src/adapters/three/ThreeAdapter.ts"
+    },
+    "./adapters/phaser": {
+      "types": "./src/adapters/phaser/PhaserAdapter.ts",
+      "default": "./src/adapters/phaser/PhaserAdapter.ts"
+    },
+    "./traits": {
+      "types": "./src/traits/index.ts",
+      "default": "./src/traits/index.ts"
+    },
+    "./render": {
+      "types": "./src/render/index.ts",
+      "default": "./src/render/index.ts"
+    },
+    "./memory": {
+      "types": "./src/memory/index.ts",
+      "default": "./src/memory/index.ts"
+    },
+    "./resources": {
+      "types": "./src/resources/index.ts",
+      "default": "./src/resources/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "phaser": "^3.87.0",
+    "pixi.js": "^8.6.6",
+    "three": "^0.172.0"
+  },
+  "peerDependenciesMeta": {
+    "phaser": { "optional": true },
+    "pixi.js": { "optional": true },
+    "three": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/three": "^0.172.0",
+    "typescript": "^5.9.2"
+  }
+}

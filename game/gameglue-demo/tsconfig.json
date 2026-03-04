@@ -16,6 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
+      "@gameglue/core": ["./packages/core/src/index.ts"],
+      "@gameglue/core/*": ["./packages/core/src/*"],
       "fumadocs-mdx:collections/*": [".source/*"]
     },
     "esModuleInterop": true,

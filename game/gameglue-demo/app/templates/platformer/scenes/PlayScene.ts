@@ -1,10 +1,10 @@
-import type { Collision, InputState } from "~/engine/types";
-import { Scene } from "~/engine/Scene";
-import type { GameObject } from "~/engine/GameObject";
-import type { Movable } from "~/traits/Movable";
-import type { Jumpable } from "~/traits/Jumpable";
-import type { Damageable } from "~/traits/Damageable";
-import type { Scorer } from "~/traits/Scorer";
+import type { Collision, InputState } from "@gameglue/core/engine";
+import { Scene } from "@gameglue/core/engine";
+import type { GameObject } from "@gameglue/core/engine";
+import type { Movable } from "@gameglue/core/traits";
+import type { Jumpable } from "@gameglue/core/traits";
+import type { Damageable } from "@gameglue/core/traits";
+import type { Scorer } from "@gameglue/core/traits";
 import { createPlayer, PLAYER_W, PLAYER_H } from "../objects/Player";
 import { createPlatform } from "../objects/Platform";
 import { createCoin, COIN_SIZE } from "../objects/Coin";
@@ -31,7 +31,7 @@ export class PlayScene extends Scene {
     // Ground platform (full width)
     this.addObject(createPlatform("ground", 0, 550, 800, 50));
 
-    // Floating platforms
+    // Floating platforms (16px height, matching gameglue-demo)
     this.addObject(createPlatform("plat-1", 150, 430, 120, 16));
     this.addObject(createPlatform("plat-2", 350, 350, 120, 16));
     this.addObject(createPlatform("plat-3", 550, 270, 120, 16));
