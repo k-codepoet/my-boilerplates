@@ -16,4 +16,9 @@
 - `web/tanstack-start-ssr/` — vinxi → vite+nitro 마이그레이션 (TanStack Start v1.166+)
   - `@tailwindcss/postcss` → `@tailwindcss/vite`, path alias `@/*` → `~/*`
   - `.validator()` → `.inputValidator()` API 변경 반영
+- `game/gameglue-demo/` — UI/배포 수정
+  - play 라우트에 HomeLayout 적용 (홈↔Play 네비게이션 연결)
+  - 깨진 docs/search UI 비활성화 (fumadocs SPA 모드 호환 이슈, TODO)
+  - `server.fs.allow` 추가 (pnpm monorepo dev 호환)
+  - `suppressHydrationWarning` 추가 (fumadocs 테마 스크립트 hydration 충돌 방지)
 - `context.md` — 공통 인프라 문서 섹션 추가
