@@ -20,12 +20,6 @@ export default function Home() {
           >
             Play Game
           </Link>
-          <Link
-            to="/docs"
-            className="px-8 py-3 border border-fd-border rounded-lg text-lg font-semibold hover:bg-fd-accent transition-colors"
-          >
-            Docs
-          </Link>
         </div>
       </div>
     </HomeLayout>

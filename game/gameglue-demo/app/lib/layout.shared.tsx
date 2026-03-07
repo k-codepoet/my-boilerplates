@@ -8,5 +8,7 @@ export function baseOptions(): BaseLayoutProps {
     links: [
       { text: "Play", url: "/play" },
     ],
+    // TODO: Re-enable when fumadocs docs route works in SPA mode
+    searchToggle: { enabled: false },
   };
 }

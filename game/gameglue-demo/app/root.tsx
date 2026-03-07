@@ -10,7 +10,8 @@ import { RootProvider } from "fumadocs-ui/provider/react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import SearchDialog from "~/components/search";
+// TODO: Re-enable when fumadocs docs route works in SPA mode
+// import SearchDialog from "~/components/search";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen" suppressHydrationWarning>
-        <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
+        <RootProvider>{children}</RootProvider>
         <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40 z-50" suppressHydrationWarning>
           {__APP_VERSION__} · {__BUILD_TIME__}
         </footer>
