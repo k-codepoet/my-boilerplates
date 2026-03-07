@@ -34,9 +34,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen" suppressHydrationWarning>
         <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
-        <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40 z-50">
+        <footer className="fixed bottom-2 right-3 text-[10px] text-muted-foreground/40 z-50" suppressHydrationWarning>
           {__APP_VERSION__} · {__BUILD_TIME__}
         </footer>
         <ScrollRestoration />
