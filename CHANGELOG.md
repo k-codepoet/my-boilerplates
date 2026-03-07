@@ -13,4 +13,7 @@
 - `.gitlab/ci/docker-build.yml`에 tanstack-router-spa Docker 빌드 검증 추가
 
 ### Changed
+- `web/tanstack-start-ssr/` — vinxi → vite+nitro 마이그레이션 (TanStack Start v1.166+)
+  - `@tailwindcss/postcss` → `@tailwindcss/vite`, path alias `@/*` → `~/*`
+  - `.validator()` → `.inputValidator()` API 변경 반영
 - `context.md` — 공통 인프라 문서 섹션 추가
