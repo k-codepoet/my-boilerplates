@@ -22,5 +22,8 @@ export default defineConfig({
     warmup: {
       clientFiles: ["./app/root.tsx"],
     },
+    fs: {
+      allow: ["../.."],
+    },
   },
 });
