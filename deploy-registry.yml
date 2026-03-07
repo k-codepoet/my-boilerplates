@@ -21,3 +21,7 @@
 
 sample-ssr: web/react-router-ssr-authentik sample-ssr services/codepoet-mac-mini-2/sample-ssr/docker-compose.yml WEBHOOK_SAMPLE_SSR
 gameglue-demo: game/gameglue-demo gameglue-demo services/codepoet-mac-mini-2/gameglue-demo/docker-compose.yml WEBHOOK_GAMEGLUE_DEMO
+sample-ssr-base: web/react-router-ssr sample-ssr-base services/codepoet-mac-mini-2/sample-ssr-base/docker-compose.yml WEBHOOK_SAMPLE_SSR_BASE
+sample-spa: web/react-router-spa sample-spa services/codepoet-mac-mini-2/sample-spa/docker-compose.yml WEBHOOK_SAMPLE_SPA
+sample-tanstack-ssr: web/tanstack-start-ssr sample-tanstack-ssr services/codepoet-mac-mini-2/sample-tanstack-ssr/docker-compose.yml WEBHOOK_SAMPLE_TANSTACK_SSR
+sample-tanstack-spa: web/tanstack-router-spa sample-tanstack-spa services/codepoet-mac-mini-2/sample-tanstack-spa/docker-compose.yml WEBHOOK_SAMPLE_TANSTACK_SPA

@@ -21,6 +21,7 @@ docker:build:
           - web/react-router-ssr
           - web/react-router-ssr-authentik
           - web/tanstack-start-ssr
+          - web/tanstack-router-spa
           - bot/slack-processor-python
           - ai-context/react-router-ssr-mcp
   script:

@@ -55,6 +55,15 @@
 
 ---
 
+## 공통 인프라 문서
+
+| 문서 | 설명 |
+|------|------|
+| [docs/LOCAL_DEV_SETUP.md](docs/LOCAL_DEV_SETUP.md) | 로컬 개발 환경 설정 (nvm, Rust, Go, Python) |
+| [docs/TROUBLESHOOT.md](docs/TROUBLESHOOT.md) | 트러블슈팅 기록 |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Docker 빌드/배포 파이프라인 (GitLab CI → Registry → Portainer) |
+| [CHANGELOG.md](CHANGELOG.md) | 프로젝트 변경 이력 |
+
 ## 공통 미완료 항목
 
 - [ ] 테스트 프레임워크 도입 (전 카테고리, 현재 typecheck만 존재)
