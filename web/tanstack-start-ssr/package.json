@@ -3,31 +3,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev",
-    "build": "vinxi build",
+    "dev": "vite dev",
+    "build": "vite build",
     "start": "node .output/server/index.mjs",
-    "typecheck": "tsc"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
-    "@tailwindcss/postcss": "^4.1.13",
-    "@tanstack/react-router": "^1.131.50",
-    "@tanstack/react-start": "^1.131.50",
+    "@tanstack/react-router": "^1.166.2",
+    "@tanstack/react-start": "^1.166.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
-    "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.13",
-    "vite": "^7.1.7"
+    "tailwindcss": "^4.1.18",
+    "tw-animate-css": "^1.3.8",
+    "vite": "^7.3.1"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/node": "^22.5.4",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
-    "tw-animate-css": "^1.3.8",
+    "nitro": "3.0.1-alpha.2",
     "typescript": "^5.9.2",
     "vite-tsconfig-paths": "^5.1.4"
   }
