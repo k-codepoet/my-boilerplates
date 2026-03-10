@@ -131,7 +131,7 @@ export async function getAuthorizationUrl(request: Request) {
     client_id: env.AUTHENTIK_CLIENT_ID,
     response_type: "code",
     redirect_uri: `${appUrl}/api/auth/callback/authentik`,
-    scope: "openid email profile",
+    scope: "openid email profile groups",
     state,
   });
 
